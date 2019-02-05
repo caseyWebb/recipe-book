@@ -1,0 +1,9 @@
+<a data-bind="path: '//new'"><button>Create Recipe</button></a>
+
+{{ recipesCollection.total_rows }} Recipes
+<hr />
+<ul>
+  {{#foreach recipesCollection.rows}}
+  <li>{{}}</li>
+  {{/foreach}}
+</ul>
