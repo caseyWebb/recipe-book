@@ -24,6 +24,13 @@ module.exports = {
   module: {
     rules: [
       {
+        // https://github.com/webpack/webpack/issues/6796
+        test: require('path').resolve(__dirname, 'node_modules'),
+        resolve: {
+          mainFields: ['esnext', 'es2015', 'module', 'main']
+        }
+      },
+      {
         test: /\.ts$/,
         use: [
           {
@@ -59,10 +66,7 @@ module.exports = {
 
   resolve: {
     mainFields: ['esnext', 'es2015', 'module', 'main'],
-    modules: [
-      path.join(__dirname, 'src'),
-      path.join(__dirname, 'node_modules')
-    ],
+    modules: [path.join(__dirname, 'src'), 'node_modules'],
     extensions: ['.js', '.ts']
   }
 }

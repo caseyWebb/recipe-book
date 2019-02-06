@@ -20,7 +20,7 @@
     "webpack-html-plugin": "^0.1.1"
   },
   "dependencies": {
-    "@profiscience/knockout-contrib": "^2.0.0-alpha.54341a5d",
+    "@profiscience/knockout-contrib": "^2.0.0-rc.29",
     "jquery": "^3.3.1",
     "knockout": "^3.5.0-rc2",
     "knockout-punches": "^0.5.1",

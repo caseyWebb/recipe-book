@@ -23,7 +23,14 @@ export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
   public readonly title = ko.observable<string>()
 
   protected async fetch() {
-    return (await db.get(this.params.id)) as Recipe
+    if (this.params.id) {
+      return (await db.get(this.params.id)) as Recipe
+    } else {
+      return {
+        id: null,
+        title: 'New Recipe'
+      }
+    }
   }
 
   public async save() {
@@ -33,9 +40,5 @@ export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
     }
     await db.put(doc)
     await super.save()
-  }
-
-  public static new() {
-    return new RecipeModel({ id: (undefined as unknown) as string })
   }
 }
