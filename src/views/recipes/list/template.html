@@ -3,7 +3,7 @@
 {{ recipesCollection.total_rows }} Recipes
 <hr />
 <ul>
-  {{#foreach recipesCollection.rows}}
-  <li>{{}}</li>
+  {{#foreach recipesCollection.docs}}
+  <li>{{ ko.toJSON($data) }}</li>
   {{/foreach}}
 </ul>

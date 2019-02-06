@@ -67,7 +67,9 @@ Route.usePlugin(
   componentRoutePlugin,
   componentsRoutePlugin,
   componentInitializerRoutePlugin,
-  createTitleRoutePlugin((...titles) => `recipe-book | ${titles.join(' > ')}`)
+  createTitleRoutePlugin(
+    (titles: string[]) => `recipe-book | ${titles.join(' > ')}`
+  )
 )
 
 /**

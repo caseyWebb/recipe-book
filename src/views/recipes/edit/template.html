@@ -1,1 +1,19 @@
-Edit/New Recipe
+<h1>
+  {{#if recipe.isNew}}
+  Create
+  {{/if}}
+  {{#ifnot recipe.isNew}}
+  Edit
+  {{/if}}
+  Recipe
+</h1>
+
+<form submit="{{ onSubmit }}">
+  <label>
+    Title
+    <input type="text" value="{{ recipe.title }}" />
+  </label>
+  <button type="submit">
+    Save
+  </button>
+</form>

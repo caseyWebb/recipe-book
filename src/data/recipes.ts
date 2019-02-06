@@ -1,11 +1,14 @@
 import * as ko from 'knockout'
 import PouchDB from 'pouchdb'
-import { DataModelConstructorBuilder } from '@profiscience/knockout-contrib'
+import {
+  DataModelConstructorBuilder,
+  nonenumerable
+} from '@profiscience/knockout-contrib'
 
 const db = new PouchDB<Recipe>('recipes')
 
 type Recipe = {
-  id: string
+  _id: string
   title: string
 }
 
@@ -14,20 +17,31 @@ export class RecipesCollection extends DataModelConstructorBuilder<{}> {
     super({})
   }
   protected async fetch() {
-    return await db.allDocs()
+    const { rows } = await db.allDocs({ include_docs: true })
+    return {
+      docs: rows.map((r) => r.doc)
+    }
   }
 }
 
 export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
-  public readonly id!: string
+  public readonly _id!: string
   public readonly title = ko.observable<string>()
 
+  public isNew = !!this.params.id
+
+  constructor(params: { id: string }) {
+    super(params)
+
+    nonenumerable(this, 'isNew')
+  }
+
   protected async fetch() {
-    if (this.params.id) {
+    if (this.isNew) {
       return (await db.get(this.params.id)) as Recipe
     } else {
       return {
-        id: null,
+        _id: null,
         title: 'New Recipe'
       }
     }
@@ -35,10 +49,11 @@ export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
 
   public async save() {
     const doc = this.toJS()
-    if (this.id === null) {
-      doc.id = doc.title
+    if (this._id === null) {
+      doc._id = doc.title.toLowerCase().replace(/\s/g, '-')
     }
     await db.put(doc)
     await super.save()
+    ;(this as any)._id = doc._id
   }
 }
