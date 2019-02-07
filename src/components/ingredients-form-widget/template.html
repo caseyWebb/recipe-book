@@ -1,0 +1,17 @@
+<!-- {{#foreach ingredients}}
+{{/foreach}} -->
+<input
+  type="text"
+  placeholder="ingredient"
+  data-bind="
+    textInput: newIngredientName,
+    autocomplete: { options: autocompleteOptions, onSelect: setIngredient },
+    event.blur: addIngredient
+  "
+/>
+
+<br />
+
+{{#ifNotEmpty newIngredientName}}
+<input type="text" placeholder="ingredient" />
+{{/ifNotEmpty}}
