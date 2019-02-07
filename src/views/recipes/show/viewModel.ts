@@ -6,7 +6,7 @@ import {
 import { RecipeModel } from 'data'
 
 export default class RecipeViewModel extends ViewModelConstructorBuilder {
-  public readonly recipe = new RecipeModel(this.ctx.params.id)
+  protected readonly recipe = new RecipeModel(this.ctx.params as { id: string })
 
   constructor(protected readonly ctx: Context & IContext) {
     super()

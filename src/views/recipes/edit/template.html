@@ -1,8 +1,8 @@
 <h1>
-  {{#if recipe.isNew}}
+  {{#if recipe.params.id === null}}
   Create
   {{/if}}
-  {{#ifnot recipe.isNew}}
+  {{#if recipe.params.id !== null}}
   Edit
   {{/if}}
   Recipe

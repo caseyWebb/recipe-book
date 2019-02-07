@@ -13,12 +13,17 @@ type Recipe = {
 }
 
 export class RecipesCollection extends DataModelConstructorBuilder<{}> {
+  public count!: number
+  public docs!: Recipe[]
+
   constructor() {
     super({})
   }
+
   protected async fetch() {
-    const { rows } = await db.allDocs({ include_docs: true })
+    const { total_rows, rows } = await db.allDocs({ include_docs: true })
     return {
+      count: total_rows,
       docs: rows.map((r) => r.doc)
     }
   }
@@ -26,24 +31,22 @@ export class RecipesCollection extends DataModelConstructorBuilder<{}> {
 
 export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
   public readonly _id!: string
+  public readonly _ref!: string
   public readonly title = ko.observable<string>()
-
-  public isNew = !!this.params.id
 
   constructor(params: { id: string }) {
     super(params)
-
-    nonenumerable(this, 'isNew')
   }
 
   protected async fetch() {
-    if (this.isNew) {
-      return (await db.get(this.params.id)) as Recipe
-    } else {
+    if (this.params.id === null) {
       return {
         _id: null,
+        _ref: undefined,
         title: 'New Recipe'
       }
+    } else {
+      return (await db.get(this.params.id)) as Recipe
     }
   }
 

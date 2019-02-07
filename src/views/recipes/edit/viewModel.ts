@@ -8,9 +8,9 @@ import { RecipeModel } from 'data/recipes'
 import { overlayLoader } from 'lib'
 
 export default class EditRecipeViewModel extends ViewModelConstructorBuilder {
-  protected recipe = new RecipeModel({ id: this.ctx.params.id })
+  protected readonly recipe = new RecipeModel(this.ctx.params as { id: string })
 
-  constructor(private ctx: Context & IContext) {
+  constructor(protected readonly ctx: Context & IContext) {
     super()
   }
 

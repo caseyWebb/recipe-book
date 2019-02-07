@@ -13,6 +13,10 @@ module.exports = {
 
   entry: './src/index.ts',
 
+  output: {
+    publicPath: '/'
+  },
+
   devtool: 'inline-source-map',
 
   devServer: {
@@ -25,7 +29,7 @@ module.exports = {
     rules: [
       {
         // https://github.com/webpack/webpack/issues/6796
-        test: require('path').resolve(__dirname, 'node_modules'),
+        test: path.resolve(__dirname, 'node_modules'),
         resolve: {
           mainFields: ['esnext', 'es2015', 'module', 'main']
         }
