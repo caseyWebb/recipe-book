@@ -1,22 +1,37 @@
 import * as ko from 'knockout'
 import PouchDB from 'pouchdb'
-import * as pouchDBFind from 'pouchdb-find'
+import pouchDbFind from 'pouchdb-find'
 import {
   DataModelConstructorBuilder,
   QueryMixin
 } from '@profiscience/knockout-contrib'
 import { GroceryStoreSection, MeasurementUnitType } from 'enum'
 
-PouchDB.plugin(pouchDBFind)
+PouchDB.plugin(pouchDbFind)
 
-const db = new PouchDB<Ingredient>('ingredients')
+const db = new PouchDB<Unwrapped<Ingredient>>('ingredients')
 
-export type Ingredient = {
-  _id: string
-  name: string
-  unitType: MeasurementUnitType
-  groceryStoreSection: GroceryStoreSection
-  note: string
+export interface Ingredient {
+  readonly _id: string
+  readonly _ref: string
+  readonly name: ko.Observable<string>
+  readonly unitType: ko.Observable<MeasurementUnitType>
+  readonly groceryStoreSection: ko.Observable<GroceryStoreSection>
+  readonly note: ko.Observable<string>
+}
+
+export interface IngredientModel extends Ingredient {}
+export class IngredientModel extends DataModelConstructorBuilder {
+  public readonly _id!: string
+  public readonly _ref!: string
+  public readonly name = ko.observable()
+  public readonly unitType = ko.observable()
+  public readonly groceryStoreSection = ko.observable()
+  public readonly note = ko.observable()
+
+  protected async fetch(): Promise<void> {
+    return Promise.resolve()
+  }
 }
 
 export class IngredientsCollection extends DataModelConstructorBuilder.Mixin(
@@ -24,20 +39,20 @@ export class IngredientsCollection extends DataModelConstructorBuilder.Mixin(
     search: ''
   })
 )<{}> {
-  public docs!: Ingredient[]
+  public docs = ko.observableArray<IngredientModel>()
 
-  protected async fetch() {
-    const { rows } = await db.find()
+  constructor() {
+    super({})
+  }
+
+  protected async fetch(): Promise<{ docs: IngredientModel[] }> {
+    const { docs } = await db.find({
+      selector: { title: { $regex: this.query.search() } }
+    })
     return {
-      docs: rows
+      docs: await Promise.all(
+        docs.map((d) => IngredientModel.create(undefined, d))
+      )
     }
   }
-}
-
-export class IngredientModel {
-  public readonly _id!: string
-  public readonly _ref!: string
-  public readonly name!: string
-
-  protected async fetch() {}
 }

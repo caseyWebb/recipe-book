@@ -1,12 +1,10 @@
-'use strict'
-
-const path = require('path')
-const TSCheckerPlugin = require('fork-ts-checker-webpack-plugin')
-const HtmlPlugin = require('html-webpack-plugin')
+import * as path from 'path'
+import TSCheckerPlugin from 'fork-ts-checker-webpack-plugin'
+import HtmlPlugin from 'html-webpack-plugin'
 
 const PRODUCTION = process.env.NODE_ENV === 'production'
 
-module.exports = {
+export default {
   context: __dirname,
 
   mode: PRODUCTION ? 'production' : 'development',

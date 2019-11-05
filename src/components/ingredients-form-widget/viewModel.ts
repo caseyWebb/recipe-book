@@ -1,6 +1,6 @@
 import * as ko from 'knockout'
 import { ViewModelConstructorBuilder } from '@profiscience/knockout-contrib'
-import { RecipeModel } from 'data'
+import { IngredientsCollection, RecipeModel } from 'data'
 
 export default class IngredientsFormWidgetViewModel extends ViewModelConstructorBuilder {
   protected recipe: RecipeModel
@@ -14,11 +14,11 @@ export default class IngredientsFormWidgetViewModel extends ViewModelConstructor
     this.recipe = params.recipe
   }
 
-  protected addIngredient() {
+  protected addIngredient(): void {
     // TODO
   }
 
-  protected setIngredient() {
+  protected setIngredient(): void {
     // TODO
   }
 }

@@ -1,33 +1,69 @@
 {
   "scripts": {
-    "build": "NODE_ENV=production webpack",
-    "start": "NODE_ENV=development webpack-dev-server --hot"
+    "build": "NODE_ENV=production TS_NODE_PROJECT=tsconfig.node.json webpack",
+    "start": "NODE_ENV=development TS_NODE_PROJECT=tsconfig.node.json webpack-dev-server --hot",
+    "lint": "esw --color --ignore-path .gitignore --ext .js,.ts ./"
   },
-  "devDependencies": {
-    "@types/jquery": "^3.3.29",
-    "@types/pouchdb": "^6.3.2",
-    "@types/pouchdb-find": "^6.3.3",
-    "fork-ts-checker-webpack-plugin": "^0.5.2",
-    "html-loader": "^0.5.5",
-    "html-webpack-plugin": "^3.2.0",
-    "prettier": "^1.15.2",
-    "ts-loader": "^5.3.0",
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.16.0",
-    "typescript": "^3.1.6",
-    "webpack": "^4.25.1",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.10",
-    "webpack-html-plugin": "^0.1.1"
+  "eslintConfig": {
+    "extends": [
+      "profiscience"
+    ],
+    "parserOptions": {
+      "project": [
+        "./tsconfig.json"
+      ]
+    },
+    "rules": {
+      "@typescript-eslint/camelcase": [
+        "error",
+        {
+          "ignoreDestructuring": true,
+          "properties": "never"
+        }
+      ],
+      "@typescript-eslint/no-empty-interface": [
+        "error",
+        {
+          "allowSingleExtends": true
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "semi": false,
+    "singleQuote": true
   },
   "dependencies": {
-    "@profiscience/knockout-contrib": "^2.0.0-rc.29",
-    "jquery": "^3.3.1",
-    "knockout": "^3.5.0-rc2",
+    "@profiscience/knockout-contrib": "^2.0.20",
+    "jquery": "^3.4.1",
+    "knockout": "^3.5.0",
     "knockout-punches": "^0.5.1",
-    "pouchdb": "^7.0.0",
-    "pouchdb-find": "^7.0.0",
+    "pouchdb": "^7.1.1",
+    "pouchdb-find": "^7.1.1",
     "toprogress2": "^2.0.0",
-    "tslib": "^1.9.3"
+    "tslib": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/html-webpack-plugin": "^3.2.1",
+    "@types/jquery": "^3.3.31",
+    "@types/node": "^12.12.5",
+    "@types/pouchdb": "^6.4.0",
+    "@types/pouchdb-find": "^6.3.4",
+    "@types/webpack": "^4.39.8",
+    "eslint": "^6.6.0",
+    "eslint-config-profiscience": "^4.1.10",
+    "eslint-watch": "^6.0.1",
+    "fork-ts-checker-webpack-plugin": "^3.0.1",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "prettier": "^1.18.2",
+    "ts-loader": "^6.2.1",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0",
+    "webpack-html-plugin": "^0.1.1"
   }
 }

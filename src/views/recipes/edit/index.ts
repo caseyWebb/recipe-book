@@ -15,7 +15,7 @@ export const create = createRoute({
   } as IContext
 })
 
-function createRoute(opts: { path: string; title: string; with?: any }) {
+function createRoute(opts: { path: string; title: string; with?: any }): Route {
   return new Route(opts.path, {
     title: opts.title,
     with: opts.with,
