@@ -1,19 +1,20 @@
 <ul>
-  {{#foreach recipe.ingredients}}
+  {{#foreach params.recipe.ingredients}}
   <li>
+    <i class="fa fa-times" data-bind="click: $component.removeIngredient"></i>
     <input type="number" value="{{ quantity }}" />
-    {{ name }}
+    {{ ingredient.name }}
   </li>
   {{/foreach}}
 </ul>
 
-<form action="submit" submit="{{ addIngredient }}">
+<form action="submit" submit="{{ newIngredient }}">
   <autocomplete-input
     params="
     placeholder: 'Search Ingredients',
     search: ingredientsCollection.query.search,
     onSelect: addIngredient,
-    options: ingredientsCollection.docs,
+    options: ingredientOptions,
     getOptionText: (opt) => opt.name
   "
   >

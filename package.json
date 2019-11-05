@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@profiscience/knockout-contrib": "^2.0.20",
+    "autobind-decorator": "^2.4.0",
     "jquery": "^3.4.1",
     "knockout": "^3.5.0",
     "knockout-punches": "^0.5.1",

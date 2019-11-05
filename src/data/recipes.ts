@@ -1,19 +1,22 @@
 import * as ko from 'knockout'
 import PouchDB from 'pouchdb'
 import { DataModelConstructorBuilder } from '@profiscience/knockout-contrib'
+import { IngredientModel } from 'data'
 import { DiscreteUnit, VolumetricUnit, WeightUnit } from 'enum'
 
 const db = new PouchDB<Recipe>('recipes')
+
+export type RecipeIngredient = {
+  quantity: number
+  unit: DiscreteUnit | VolumetricUnit | WeightUnit
+  ingredient: IngredientModel
+}
 
 interface Recipe {
   readonly _id: string
   readonly _ref: string
   readonly title: ko.Observable<string>
-  readonly ingredients: ko.ObservableArray<{
-    quantity: number
-    unit: DiscreteUnit | VolumetricUnit | WeightUnit
-    ingredientId: string
-  }>
+  readonly ingredients: ko.ObservableArray<RecipeIngredient>
 
   // directions: string[]
   // favorite: boolean
@@ -32,7 +35,7 @@ export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
   public readonly _id!: string
   public readonly _ref!: string
   public readonly title = ko.observable()
-  public readonly ingredients = ko.observableArray()
+  public readonly ingredients = ko.observableArray<RecipeIngredient>()
 
   protected async fetch() {
     if (this.params.id === null) {

@@ -3,7 +3,7 @@
   placeholder="{{ params.placeholder }}"
   data-bind="textInput: params.search, event: { keydown: onKeydown }"
 />
-{{#ifNotEmpty params.search}}
+{{#ifNotEmpty params.options}}
 <ul class="autocomplete">
   {{#foreach params.options}}
   <li

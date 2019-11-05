@@ -9,6 +9,7 @@
     "typeRoots": ["@types", "node_modules/@types"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
     "baseUrl": "./",
     "jsx": "preserve",
     "paths": {
