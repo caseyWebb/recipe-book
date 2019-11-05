@@ -1,6 +1,7 @@
+import { NewIngredientModal } from './../modals/new-ingredient/index'
 import * as ko from 'knockout'
 import { ViewModelConstructorBuilder } from '@profiscience/knockout-contrib'
-import { IngredientsCollection, RecipeModel } from 'data'
+import { IngredientsCollection, RecipeModel, IngredientModel } from 'data'
 
 export default class IngredientsFormWidgetViewModel extends ViewModelConstructorBuilder {
   protected recipe: RecipeModel
@@ -14,11 +15,13 @@ export default class IngredientsFormWidgetViewModel extends ViewModelConstructor
     this.recipe = params.recipe
   }
 
-  protected addIngredient(): void {
-    // TODO
-  }
-
-  protected setIngredient(): void {
-    // TODO
+  protected async addIngredient(): Promise<void> {
+    const ingredient = await IngredientModel.create(
+      { id: null },
+      {
+        name: this.ingredientsCollection.query.search()
+      }
+    )
+    NewIngredientModal.launch(ingredient)
   }
 }

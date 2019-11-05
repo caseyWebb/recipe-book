@@ -5,12 +5,12 @@ export enum MeasurementUnitType {
 }
 
 export enum DiscreteUnit {
-  Count
+  Count = 'x'
 }
 
 export enum VolumetricUnit {
   Cup = 'C',
-  FluidOunce = 'fl oz',
+  'Fluid Ounce' = 'fl oz',
   Liter = 'l',
   Tablespoon = 'tbs',
   Teaspoon = 'tsp'

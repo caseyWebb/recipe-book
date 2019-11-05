@@ -1,0 +1,41 @@
+.modal-container.open {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.modal-container.closed {
+  display: none;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+.modal-dialog {
+  border-radius: 5px;
+  padding: 50px;
+  position: relative;
+  background: white;
+  width: 600px;
+  margin: auto;
+  margin-top: 100px;
+}
+
+.modal-dialog button.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border: none;
+  font-size: 32px;
+  background: transparent;
+  cursor: pointer;
+}

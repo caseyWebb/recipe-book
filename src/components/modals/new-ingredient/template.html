@@ -1,0 +1,33 @@
+<form submit="{{ onSubmit }}">
+  <label>
+    Name
+    <input type="text" value="{{ ingredient.name }}" />
+  </label>
+
+  <label>
+    Unit Type
+    <select value="{{ ingredient.unitType }}">
+      <option>Discrete</option>
+      <option>Volumetric</option>
+      <option>Weight</option>
+    </select>
+  </label>
+
+  <label>
+    Grocery Section
+    <select
+      data-bind="
+        value: ingredient.groceryStoreSection,
+        options: groceryStoreSections
+      "
+    >
+    </select>
+  </label>
+
+  <label>
+    Note
+    <textarea rows="10" data-bind="textInput: ingredient.note"></textarea>
+  </label>
+
+  <button type="submit">Save Ingredient</button>
+</form>

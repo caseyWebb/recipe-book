@@ -1,17 +1,29 @@
-<!-- {{#foreach ingredients}}
-{{/foreach}} -->
-<input
-  type="text"
-  placeholder="ingredient"
-  data-bind="
-    textInput: newIngredientName,
-    autocomplete: { options: autocompleteOptions, onSelect: setIngredient },
-    event.blur: addIngredient
-  "
-/>
+<ul>
+  {{#foreach recipe.ingredients}}
+  <li>
+    <input type="number" value="{{ quantity }}" />
+    {{ name }}
+  </li>
+  {{/foreach}}
+</ul>
+
+<form action="submit" submit="{{ addIngredient }}">
+  <input
+    type="text"
+    placeholder="Search Ingredients"
+    data-bind="
+      textInput: ingredientsCollection.query.search
+    "
+  />
+  {{#ifNotEmpty ingredientsCollection.query.search}}
+  <ul class="autocomplete">
+    {{#foreach ingredientsCollection.docs}}
+    <li>{{ name }}</li>
+    {{/foreach}}
+  </ul>
+  {{/ifNotEmpty}}
+  <button type="submit">Add new ingredient</button>
+</form>
 
 <br />
-
-{{#ifNotEmpty newIngredientName}}
-<input type="text" placeholder="ingredient" />
-{{/ifNotEmpty}}
+<br />
