@@ -1,11 +1,6 @@
 import { ViewModelConstructorBuilder } from '@profiscience/knockout-contrib'
 import { IngredientModel } from 'data'
-import {
-  DiscreteUnit,
-  VolumetricUnit,
-  WeightUnit,
-  GroceryStoreSection
-} from 'enum'
+import { GroceryStoreSection } from 'enum'
 import { ModalMixin } from 'model.mixins'
 
 import template from './template.html'
@@ -18,12 +13,18 @@ export class NewIngredientModal extends ViewModelConstructorBuilder.Mixin(
 ) {
   protected groceryStoreSections = GroceryStoreSection
 
-  constructor(protected readonly ingredient: IngredientModel) {
+  constructor(
+    readonly params: {
+      ingredient: IngredientModel
+      afterAdd(): void
+    }
+  ) {
     super()
   }
 
-  protected onSubmit() {
-    this.ingredient.save()
+  protected async onSubmit(): Promise<void> {
+    await this.params.ingredient.save()
+    this.params.afterAdd()
     this.destroy()
   }
 }

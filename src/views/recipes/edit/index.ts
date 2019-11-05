@@ -24,7 +24,8 @@ function createRoute(opts: { path: string; title: string; with?: any }): Route {
       viewModel: import('./viewModel')
     }),
     components: () => ({
-      'ingredients-form-widget': import('components/ingredients-form-widget') as any
+      'ingredients-form-widget': import('components/ingredients-form-widget') as any,
+      'autocomplete-input': import('components/autocomplete-input') as any
     })
   })
 }

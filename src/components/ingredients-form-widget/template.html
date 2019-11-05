@@ -8,20 +8,16 @@
 </ul>
 
 <form action="submit" submit="{{ addIngredient }}">
-  <input
-    type="text"
-    placeholder="Search Ingredients"
-    data-bind="
-      textInput: ingredientsCollection.query.search
-    "
-  />
-  {{#ifNotEmpty ingredientsCollection.query.search}}
-  <ul class="autocomplete">
-    {{#foreach ingredientsCollection.docs}}
-    <li>{{ name }}</li>
-    {{/foreach}}
-  </ul>
-  {{/ifNotEmpty}}
+  <autocomplete-input
+    params="
+    placeholder: 'Search Ingredients',
+    search: ingredientsCollection.query.search,
+    onSelect: addIngredient,
+    options: ingredientsCollection.docs,
+    getOptionText: (opt) => opt.name
+  "
+  >
+  </autocomplete-input>
   <button type="submit">Add new ingredient</button>
 </form>
 

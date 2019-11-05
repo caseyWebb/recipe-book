@@ -20,8 +20,8 @@ export const ModalMixin = (modalParams: ModalMixinParams) => <
 
     private _destroyed = false
 
-    public destroy() {
-      if (this._destroyed) return Promise.resolve()
+    public destroy(): void {
+      if (this._destroyed) return
       this._destroyed = true
       this.showModal(false)
     }
@@ -30,7 +30,7 @@ export const ModalMixin = (modalParams: ModalMixinParams) => <
       this: new (params: P, el: HTMLDivElement) => TT,
       params: P
     ): TT {
-      const instance: any = Reflect.construct(this, [params])
+      const instance = Reflect.construct(this, [params])
       const template = [createModalDOM(modalParams, instance.el)]
       const componentName = `modal-${id++}`
       ko.components.register(componentName, {
@@ -56,7 +56,10 @@ export const ModalMixin = (modalParams: ModalMixinParams) => <
     }
   }
 
-function createModalDOM(params: ModalMixinParams, container: HTMLDivElement) {
+function createModalDOM(
+  params: ModalMixinParams,
+  container: HTMLDivElement
+): HTMLDivElement {
   $(container)
     .addClass('modal-container')
     .attr('data-bind', 'css: showModal() ? "open" : "closed"').append(`

@@ -65,7 +65,7 @@ export class IngredientsCollection extends DataModelConstructorBuilder.Mixin(
 
   protected async fetch(): Promise<{ docs: IngredientModel[] }> {
     const { docs } = await db.find({
-      selector: { name: { $regex: this.query.search() } }
+      selector: { name: { $regex: new RegExp(this.query.search(), 'i') } }
     })
     return {
       docs: await Promise.all(

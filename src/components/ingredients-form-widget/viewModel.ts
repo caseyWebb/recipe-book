@@ -22,6 +22,6 @@ export default class IngredientsFormWidgetViewModel extends ViewModelConstructor
         name: this.ingredientsCollection.query.search()
       }
     )
-    NewIngredientModal.launch(ingredient)
+    NewIngredientModal.launch({ ingredient, afterAdd() {} })
   }
 }

@@ -1,0 +1,20 @@
+<input
+  type="text"
+  placeholder="{{ params.placeholder }}"
+  data-bind="textInput: params.search, event: { keydown: onKeydown }"
+/>
+{{#ifNotEmpty params.search}}
+<ul class="autocomplete">
+  {{#foreach params.options}}
+  <li
+    data-bind="
+      click: $component.params.onSelect,
+      css: { selected: $index() === $component.selectedIndex() },
+      event: { mouseenter: () => $component.selectedIndex($index()) }
+    "
+  >
+    {{ $component.params.getOptionText($data) }}
+  </li>
+  {{/foreach}}
+</ul>
+{{/ifNotEmpty}}

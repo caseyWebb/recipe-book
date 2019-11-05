@@ -68,7 +68,7 @@ ul.autocomplete {
   cursor: pointer;
 }
 
-.autocomplete li:hover {
+.autocomplete li.selected {
   background: black;
   color: white;
 }
