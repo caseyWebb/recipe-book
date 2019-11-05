@@ -39,3 +39,10 @@
   background: transparent;
   cursor: pointer;
 }
+
+.autocomplete {
+  opacity: 0;
+}
+input:focus + .autocomplete {
+  opacity: 1;
+}

@@ -16,7 +16,10 @@ export default class AutocompleteInputComponentViewModel {
 
   protected onKeydown(data: any, e: KeyboardEvent): boolean {
     // Tab
-    if (e.keyCode === 9 && this.params.options().length > 0) {
+    if (
+      (e.keyCode === 9 || e.keyCode === 13) &&
+      this.params.options().length > 0
+    ) {
       this.params.onSelect(this.params.options()[this.selectedIndex()])
       this.params.search('')
       return false

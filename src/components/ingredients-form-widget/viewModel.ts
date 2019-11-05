@@ -10,6 +10,8 @@ import {
 } from 'data'
 import { VolumetricUnit } from 'enum'
 
+const NEW_INGREDIENT = Symbol()
+
 export default class IngredientsFormWidgetViewModel extends ViewModelConstructorBuilder {
   private ingredientsCollection = new IngredientsCollection()
 
@@ -19,38 +21,39 @@ export default class IngredientsFormWidgetViewModel extends ViewModelConstructor
     this.params.recipe.ingredients().map((i) => i.ingredient._id)
   )
 
-  protected ingredientOptions = ko.pureComputed(() =>
-    this.ingredientsCollection.query.search()
-      ? this.ingredientsCollection
-          .docs()
-          .filter((i) => !this.addedIngredientIds().includes(i._id))
-      : []
-  )
+  protected ingredientOptions = ko.pureComputed(() => [
+    ...this.ingredientsCollection
+      .docs()
+      .filter((i) => !this.addedIngredientIds().includes(i._id)),
+    { name: 'Add new ingredient', [NEW_INGREDIENT]: true }
+  ])
 
   constructor(protected params: { recipe: RecipeModel }) {
     super()
   }
 
   @autobind
-  protected addIngredient(ingredient: IngredientModel): void {
+  protected async addIngredient(
+    ingredient: IngredientModel & { [NEW_INGREDIENT]?: boolean }
+  ): Promise<void> {
+    if (ingredient[NEW_INGREDIENT]) {
+      // eslint-disable-next-line
+      ingredient = await IngredientModel.create(
+        { id: null },
+        {
+          name: this.ingredientsCollection.query.search()
+        }
+      )
+      await new Promise((resolve) =>
+        NewIngredientModal.launch({ ingredient, afterAdd: resolve })
+      )
+    }
     this.params.recipe.ingredients.push({
       quantity: 0,
       unit: VolumetricUnit.Cup,
       ingredient
     })
-  }
-
-  protected async newIngredient(): Promise<void> {
-    const ingredient = await IngredientModel.create(
-      { id: null },
-      {
-        name: this.ingredientsCollection.query.search()
-      }
-    )
-    await new Promise((resolve) =>
-      NewIngredientModal.launch({ ingredient, afterAdd: resolve })
-    )
-    this.addIngredient(ingredient)
+    this.ingredientsCollection.query.search('')
   }
 
   protected removeIngredient(ingredient: RecipeIngredient): void {
