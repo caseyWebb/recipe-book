@@ -45,8 +45,8 @@ export class IngredientModel extends DataModelConstructorBuilder<{
       doc._id = doc.name.toLowerCase().replace(/\s/g, '-')
     }
     await db.put(doc)
+    this.params.id = doc._id
     await super.save()
-    this._id = doc._id
   }
 }
 

@@ -1,4 +1,3 @@
-import { IngredientsCollection } from './ingredients'
 import * as ko from 'knockout'
 import PouchDB from 'pouchdb'
 import { DataModelConstructorBuilder } from '@profiscience/knockout-contrib'
