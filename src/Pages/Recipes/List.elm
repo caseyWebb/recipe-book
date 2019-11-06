@@ -15,8 +15,8 @@ type Msg
     | RecipesRecieved RecipeList
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
+init : ( Model, Cmd Msg )
+init =
     ( { count = 0, recipes = [] }, fetchRecipes () )
 
 

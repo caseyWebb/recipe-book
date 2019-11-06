@@ -8,18 +8,10 @@ const app = Elm.Main.init({
 
 callAndRespond(app.ports.fetchRecipes, app.ports.receiveRecipes, recipe.list)
 
-interface Call {
-  subscribe(cb: () => any): void
-}
-
-interface Response<T> {
-  send(data: T): void
-}
-
 function callAndRespond<T>(
-  call: Call,
-  respond: Response<T>,
+  call: { subscribe(cb: () => unknown): void },
+  respond: { send(data: T): void },
   resolve: () => Promise<T>
-) {
+): void {
   call.subscribe(async () => respond.send(await resolve()))
 }
