@@ -1,3 +1,4 @@
+import { IngredientsCollection } from './ingredients'
 import * as ko from 'knockout'
 import PouchDB from 'pouchdb'
 import { DataModelConstructorBuilder } from '@profiscience/knockout-contrib'
@@ -9,8 +10,11 @@ const db = new PouchDB<RecipeSchema>('recipes')
 type RecipeSchema = {
   readonly _id: string
   readonly _ref: string
-  readonly title: string
-  readonly ingredients: ko.ObservableArray<RecipeIngredient>
+  title: string
+  ingredients: {
+    quantity: number
+    ingredient: string
+  }[]
 
   // directions: string[]
   // favorite: boolean
@@ -31,7 +35,7 @@ export type RecipeIngredient = {
 }
 
 export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
-  public _id!: string
+  public readonly _id!: string
   public readonly _ref!: string
   public readonly title = ko.observable('')
   public readonly ingredients = ko.observableArray<RecipeIngredient>()
@@ -40,22 +44,41 @@ export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
     if (this.params.id === null) {
       return {
         _id: null,
-        _ref: undefined,
-        title: 'New Recipe'
+        _ref: undefined
       }
     } else {
-      return await db.get(this.params.id)
+      const doc = await db.get(this.params.id)
+      const ingredients = await Promise.all(
+        doc.ingredients.map(async (i) => ({
+          quantity: i.quantity,
+          ingredient: await IngredientModel.create({ id: i.ingredient })
+        }))
+      )
+      return {
+        ...doc,
+        ingredients
+      }
     }
   }
 
   public async save(): Promise<void> {
-    const doc = this.toJS()
-    if (this._id === null) {
-      doc._id = doc.title.toLowerCase().replace(/\s/g, '-')
+    const recipe: Unwrapped<RecipeModel> = this.toJS()
+    const _id =
+      recipe._id === null
+        ? recipe.title.toLowerCase().replace(/\s/g, '-')
+        : recipe._id
+    const ingredients = recipe.ingredients.map((i) => ({
+      ...i,
+      ingredient: i.ingredient._id as string
+    }))
+    const doc: RecipeSchema = {
+      ...recipe,
+      _id,
+      ingredients
     }
     await db.put(doc)
+    this.params.id = _id
     await super.save()
-    this._id = doc._id
   }
 }
 

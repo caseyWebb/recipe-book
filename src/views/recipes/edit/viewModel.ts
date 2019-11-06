@@ -17,6 +17,7 @@ export default class EditRecipeViewModel extends ViewModelConstructorBuilder {
   public async onSubmit(): Promise<void> {
     overlayLoader.show()
     await this.recipe.save()
+    console.log(this.recipe)
     overlayLoader.hide()
     Router.update(`//${this.recipe._id}`)
   }

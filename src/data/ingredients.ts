@@ -12,8 +12,8 @@ PouchDB.plugin(pouchDbFind)
 const db = new PouchDB<IngredientSchema>('ingredients')
 
 type IngredientSchema = {
-  _id: string
-  _ref: string
+  readonly _id: string
+  readonly _ref: string
   name: string
   unitType: keyof typeof MeasurementUnitType
   groceryStoreSection: keyof typeof GroceryStoreSection

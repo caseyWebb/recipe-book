@@ -42,6 +42,7 @@
 
 .autocomplete {
   opacity: 0;
+  pointer-events: none;
 }
 input:focus + .autocomplete {
   opacity: 1;
