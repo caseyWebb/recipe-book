@@ -36,19 +36,12 @@
     "singleQuote": true
   },
   "dependencies": {
-    "@profiscience/knockout-contrib": "^2.0.20",
-    "autobind-decorator": "^2.4.0",
-    "jquery": "^3.4.1",
-    "knockout": "^3.5.0",
-    "knockout-punches": "^0.5.1",
     "pouchdb": "^7.1.1",
     "pouchdb-find": "^7.1.1",
-    "toprogress2": "^2.0.0",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@types/html-webpack-plugin": "^3.2.1",
-    "@types/jquery": "^3.3.31",
     "@types/node": "^12.12.6",
     "@types/pouchdb": "^6.4.0",
     "@types/pouchdb-find": "^6.3.4",
@@ -60,7 +53,6 @@
     "eslint": "^6.6.0",
     "eslint-config-profiscience": "^4.1.10",
     "eslint-watch": "^6.0.1",
-    "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
     "prettier": "^1.18.2",
     "ts-loader": "^6.2.1",

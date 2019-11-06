@@ -18,323 +18,6 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@profiscience/knockout-contrib-bindings-click-alt@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-bindings-click-alt/-/knockout-contrib-bindings-click-alt-2.0.0.tgz#bf73ca6a6f16d49b6d68456dd20f5a9534a39507"
-  integrity sha512-RNwT8aMIV1Fpmiu+aXtzduLLF5OaVa7yGvtNurmzxrtg/gjh9ee2CrS7zqWWsDFQYS+mpmcftyln63AvlmNDag==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-bindings-click-ctrl@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-bindings-click-ctrl/-/knockout-contrib-bindings-click-ctrl-2.0.0.tgz#10cb3cc9cf8ea86f97fe351cb9d5479d419f0fda"
-  integrity sha512-LLUsWzKQu0TF8PbXO7Zf68ZIHUJu9I0j2qzFFi9clgqdDrj3J+CqGZRobcJmr8kwwf3t6pgp/6ccAOpAPNGm2Q==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-bindings-click-meta@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-bindings-click-meta/-/knockout-contrib-bindings-click-meta-2.0.0.tgz#e6389a5c49215178f63682cbe5a83407f7024ef5"
-  integrity sha512-ud7T3iZB/2LyEWWUYtsmgi7u8H6KRNiN54BA+j6yLZnXLRACNYnLzyFJQL+1N/VgWzbclTZK4Ebv39qHEpIuBg==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-bindings-click-shift@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-bindings-click-shift/-/knockout-contrib-bindings-click-shift-2.0.0.tgz#31238198d31c9bb1b4d3fab93b9649dd3922d411"
-  integrity sha512-tlCf0MBQC2Q1sov1fKRf33GflRb32LgZjV8+qDXALgWoQyMOy1zS4TQ9Pnr6j+TDv6web70ZeRbyPqsNDv16Qg==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-bindings-draggable@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-bindings-draggable/-/knockout-contrib-bindings-draggable-1.1.0.tgz#d67e3fd21f18314ef230394757dd3861eec965c9"
-  integrity sha512-c8xK6r1yBgltrBFmUMV/f4B8ol0Lu3KS82kZ+0PgE55i6e+jyVQIi50euzJx/avhmDfk5ObIgdIMb4dEs0eLGg==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-bindings-jquery@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-bindings-jquery/-/knockout-contrib-bindings-jquery-2.0.0.tgz#1ef0149ae70ae0779f49fc43d8a31c6b998c7d9b"
-  integrity sha512-BkC/qIsmFConjz5me9ZirJGby+QJYEquDkKpWvvG/MJMBUnXkfER1IJ6Y3mn95Obxis3BpTO/dQr0z3lrygnSg==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-bindings-toggle@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-bindings-toggle/-/knockout-contrib-bindings-toggle-2.0.0.tgz#497d3d3633c5b1e05ebe0a70fe1cdbef57e65e31"
-  integrity sha512-TNSGJjsJpefkVOHPIJsguAnNbboCal0G6O4VW1GdjP2oCmtZvDXJQpFiQ0hOk2QxfmStOoBsmEFwfBVF2Eq7QQ==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-components-flash-message@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-components-flash-message/-/knockout-contrib-components-flash-message-2.0.9.tgz#a137df916fb60d954688e7170cdebf18096caafd"
-  integrity sha512-VpStdC3Uvy7jWcbURn40stYPHriFn5zEMGMA7kAX3KKPplKbFMZCDYV8zZqm0qX0cPOvPJwjPprAmus/cHGzfw==
-  dependencies:
-    "@profiscience/knockout-contrib-model-builders-view" "^2.0.1"
-    babel-runtime "^6.26.0"
-    jsx-dom "^6.3.1"
-
-"@profiscience/knockout-contrib-filters-date-format@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-filters-date-format/-/knockout-contrib-filters-date-format-2.0.2.tgz#35d57e08c4cfef5b824df5f9157419b1ce486237"
-  integrity sha512-hKSrgA/peCulbvTVESj4Sc7lXfvZI1S14FSJXfcFRsFqED5gREQTLdqD5XWWeY8++pKIjCS2mNf6LwZFbuuC7g==
-  dependencies:
-    babel-runtime "^6.26.0"
-    date-fns "^2.0.0"
-
-"@profiscience/knockout-contrib-model-builders-base@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-model-builders-base/-/knockout-contrib-model-builders-base-2.0.1.tgz#85cd5f83ecb920019afb3422a1bafbe8bd2dcad1"
-  integrity sha512-V75E7EBq1+idgvsWeppWOEF0lquISUrYVypbthlItPWFkVumBlfYplTuyH25d65jnOjGj/aLyp+844HWaHJ4IQ==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-model-builders-data@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-model-builders-data/-/knockout-contrib-model-builders-data-2.3.0.tgz#c44cf9b4ba4fb2a46823a1d228ed592963068d3f"
-  integrity sha512-vwalm1ItRqEcOE734dkytsGqtEq4udywm+qBvfndMWUKvePPSFns2dk2Q3nzvViMbjIgHTnLhGEux9h88rmtkw==
-  dependencies:
-    "@profiscience/knockout-contrib-model-builders-base" "^2.0.1"
-    "@profiscience/knockout-contrib-model-mixins-disposal-aggregator" "^2.0.1"
-    "@profiscience/knockout-contrib-model-mixins-subscription-disposal" "^2.0.1"
-    "@profiscience/knockout-contrib-utils-assign" "^2.0.2"
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-model-builders-view@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-model-builders-view/-/knockout-contrib-model-builders-view-2.0.1.tgz#d85cee01f5823f412a96336d6a226a61187cb97a"
-  integrity sha512-UaHaDsEhR7gzB2bKNdfbILdB33NqBuRufk2gkCBXVpudLzwPzb98WuRGvGw5D/NrRQIZj0aLpEcNx6dUDfca4g==
-  dependencies:
-    "@profiscience/knockout-contrib-model-builders-base" "^2.0.1"
-    "@profiscience/knockout-contrib-model-mixins-disposal-aggregator" "^2.0.1"
-    "@profiscience/knockout-contrib-model-mixins-subscription-disposal" "^2.0.1"
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-model-mixins-disposal-aggregator@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-model-mixins-disposal-aggregator/-/knockout-contrib-model-mixins-disposal-aggregator-2.0.1.tgz#7aa0fda6878a59730cd58575af24471507e52124"
-  integrity sha512-dNf1i5sRnhZehXebz8w/z/GuegaUgnQs8puiSY6eRvvK9mhCFUkAtG8C/oQ8iwFVDju24LH9IIXJlzHp+BfQcg==
-  dependencies:
-    "@profiscience/knockout-contrib-model-builders-base" "^2.0.1"
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-model-mixins-pager@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-model-mixins-pager/-/knockout-contrib-model-mixins-pager-2.1.0.tgz#9cdd674437d43cd852cfc522f3821880324579d6"
-  integrity sha512-Ca3NCjMzJvr0meJ440xHmRS5/3otrI9Leg+fdBul8MMHfWCTAnss43ThWdxoclB/UhEfhTD/pFhM55aLpsuPFg==
-  dependencies:
-    babel-runtime "^6.26.0"
-    core-js "^3.1.3"
-    jsx-dom "^6.3.1"
-
-"@profiscience/knockout-contrib-model-mixins-query@^1.1.10":
-  version "1.1.10"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-model-mixins-query/-/knockout-contrib-model-mixins-query-1.1.10.tgz#06be2204221f18068702f13a61a210a6fef02202"
-  integrity sha512-UYHGRc8NrcdHias6Nz4oAMtWOJSvSJDLGbl7oKL3a02uVTAeFWVbEdTZ4zxXWPiF7SBrpip3migVNdsnByWcJQ==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-model-mixins-subscription-disposal@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-model-mixins-subscription-disposal/-/knockout-contrib-model-mixins-subscription-disposal-2.0.1.tgz#df5113c3bc40150b539166fdbb17ad211858fbba"
-  integrity sha512-NnRiPKDLlGuaqwlHE53cl5kXf9UkhvOPEBZxh9Mm7Ml1OknU5XMF0cSpcxq/gyzhW80oEFFqdII2DLV1EpTEhg==
-  dependencies:
-    "@profiscience/knockout-contrib-model-builders-base" "^2.0.1"
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-model-mixins-transform@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-model-mixins-transform/-/knockout-contrib-model-mixins-transform-2.1.0.tgz#741a2203e9afde00f6d97f96bf44147a596adf7e"
-  integrity sha512-nv3PVz3VtN+XoHw3fU5P80E3ktk6Lqy8Qnv3ctSDzkA0s1YhCl4PlSXAeNZnUJ/6AT1jEfTKUwe2Z3hWMpr8MA==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-query@^2.1.3":
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-query/-/knockout-contrib-query-2.1.3.tgz#172a28e4df0c7c5eb912004d6b452f18fd5fd957"
-  integrity sha512-7XIn8BQrp7GhmjuiSzNO5F8DXJtCXHzSFuxNL8Q1rQali7qVQ9H7AiyxDiwItMsCF9OCZZIGRcMzFS+M50WUHw==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-middleware-flash-message@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-middleware-flash-message/-/knockout-contrib-router-middleware-flash-message-2.0.9.tgz#d1f240cd2cb75f0604f39bae72523d6bee6b2f08"
-  integrity sha512-kbA104sstneN6hi/xq7N4CYbxkGHY6LgPlrVah9p+aViNpls/plS9SRxP3Vnt8BC6t3iYHRe6IZnyiATdrtBgA==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-middleware-loading@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-middleware-loading/-/knockout-contrib-router-middleware-loading-1.0.10.tgz#35066b57ab4efd58c7913449ba72a5b15c8c2716"
-  integrity sha512-xNsW3su6j+FLXk3RhzlrMFb26z7ezFV0ljF5ZckUWuJkmtpBLw6I/wBD68uTC5+9WvADsddGLCWESbbQXcE65A==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-middleware-progress-bar@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-middleware-progress-bar/-/knockout-contrib-router-middleware-progress-bar-2.0.9.tgz#d94bad2aca109e7ca7cb726e1312243c56bb4fa0"
-  integrity sha512-Sn648ROzcw0WADcbce9FoDXjRDRs6t4DZKI4F2r0ukqK6XEqko3QH9rEyrVDADw171F9lt7ejrEUblZC78/0kw==
-  dependencies:
-    "@profiscience/knockout-contrib-router-middleware-loading" "^1.0.10"
-    babel-runtime "^6.26.0"
-    toprogress2 "^2.0.0"
-
-"@profiscience/knockout-contrib-router-middleware-scroll-position@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-middleware-scroll-position/-/knockout-contrib-router-middleware-scroll-position-2.0.9.tgz#715b10aa2d421bd4fc12da56ef2fc4003be42d9c"
-  integrity sha512-+/pigtq7ptgzxaC7NKLq66dwit9IkLsX44kPlpX3EJiGQ7jG7QQ0dk4IxDbF5PaLc2Ac4ozDCYpj7YpNONZOEQ==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-plugins-children@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-plugins-children/-/knockout-contrib-router-plugins-children-2.0.9.tgz#97fbaff3b46512d1c40ba08670506ce52cbe9d43"
-  integrity sha512-iGMdWz4rEDcYD4dsF/eegtGLDR08EjfpgCDEKgYXlFLMv9m2oEWYBUXXi8aeuPqrc9ZDPswSJC+f04UNWHdz7w==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-plugins-component@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-plugins-component/-/knockout-contrib-router-plugins-component-2.0.9.tgz#be20028f8b0045b6bb73545d7db8ffb821e3af91"
-  integrity sha512-MkmJh8XRvqOj/VPGfpzq5/GPeTzIU7ViQ3ISiQ/imFJxYO1FjCl4s1eucGLh0lA9dJ3hYQVfRBSjNrgbyD/RGw==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-plugins-components@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-plugins-components/-/knockout-contrib-router-plugins-components-1.0.9.tgz#c4f5d7f18b350eb97f94fcd04037bdbaec9e3773"
-  integrity sha512-H33PIB0VYEm31aMhoP9QbrlJkY5SOFDiMWcDSocHkAqvE/H/1dO1xepi/ZbiOIZ0SrK2F1Ued0uNc4KstQPYQg==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-plugins-init@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-plugins-init/-/knockout-contrib-router-plugins-init-2.0.9.tgz#2dd6972a4d83eda2e5e538791d080a55c8365fac"
-  integrity sha512-hW5eJ+b30c5fYdTFMmZokFNZOqyZUPL1W4fFcPUorCiwpCvVNk8ZDKFuOqyPbMxFov64296IM6JSEFjOdlaU3A==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-plugins-redirect@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-plugins-redirect/-/knockout-contrib-router-plugins-redirect-2.0.9.tgz#63db266efcf80133d03810e6875cd3e2671e48a3"
-  integrity sha512-EdsA6lGM8DAea9VlqCaQHrq4aK6IVYCqCnjsygap+dzjakGXZ1dRbjlfqu4Yj3PS4A8KlyglZOTF8ZAWjbxqaA==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-plugins-title@^2.0.10":
-  version "2.0.10"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-plugins-title/-/knockout-contrib-router-plugins-title-2.0.10.tgz#49cf213622d66d6cd76cb0e52af32f2e713a8765"
-  integrity sha512-uuJA/T9ppdGnYf/8wGUv5d0WuAqvw4W8xxugO7fxJzHz5NQE4h2EuWt9LQd/e3rci/isV9CHYwc1HPSNQTDy+Q==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router-plugins-with@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router-plugins-with/-/knockout-contrib-router-plugins-with-2.0.9.tgz#c77081d9f5e4c81b3c393b594158a8ef23ce5ee3"
-  integrity sha512-2KE4Sm06uww4zfHj8cX33ZoDMzP2y4PlSFMMiVwXUzpc4H97tikXNiqTO+cwfwBRzPYv0j61K99QQX8d1S6VXw==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-router@^2.0.8":
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-router/-/knockout-contrib-router-2.0.8.tgz#9a6487bd6adc65582c4c2b5ab76ad5ab622b05ef"
-  integrity sha512-7NEBjMATwxAaAgiqtJjREqGNry3XyMS5s9AZ0M3egQjrSuluPoLlbnGs+OYHGQoBbvzfh+k06RoFkeALw10nWw==
-  dependencies:
-    babel-runtime "^6.26.0"
-    path-to-regexp "^3.0.0"
-
-"@profiscience/knockout-contrib-utils-assign@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-utils-assign/-/knockout-contrib-utils-assign-2.0.2.tgz#a9d3323eab271471b38560d1e14016e75be26857"
-  integrity sha512-kF4nzWYv/jvPhtIboxdAcineTldTuQRZjxMzQGu1YhA0d+9oByJVT2nsbbASnQR+dBuC2LlgiL5zCP6BXlrK0g==
-  dependencies:
-    "@profiscience/knockout-contrib-utils-from-js" "^2.0.0"
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-utils-defaults@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-utils-defaults/-/knockout-contrib-utils-defaults-2.1.0.tgz#dc829615d3821b43ed459d5c7f4f109b3ea6db3c"
-  integrity sha512-zVd+85a9rVabryB7mL+T6IkaN5Q7nc/DuGMvjerIc5rB/tUyfU9B4fSTYfqN8ktTYyvgBshVqr+TTAvwc5dA/w==
-  dependencies:
-    "@profiscience/knockout-contrib-utils-from-js" "^2.0.0"
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-utils-from-js@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-utils-from-js/-/knockout-contrib-utils-from-js-2.0.0.tgz#f24983d2abe2e4e998ed8d09e04af825830c4799"
-  integrity sha512-GjM84N9nSji+cfERpkl4v5MtSPu0Xce26QgE826B+Aqw5pSK5Y3JoSDcMvgUHHE87dUED4pZgYb5OBNJoWKKMg==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-utils-increment@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-utils-increment/-/knockout-contrib-utils-increment-2.0.0.tgz#957318821dab5be1ed4d332d6c72a5f1933141bf"
-  integrity sha512-Rl62HsgLu26mf6fPzTQfCLEsMJQXN5i/lrJR1EMEfMDbPOF8X+JaonRsuBwEnTlKzPtaHSeFeVyUbNMmRpylFg==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-utils-modify@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-utils-modify/-/knockout-contrib-utils-modify-2.0.0.tgz#5e3144a9fbda36c723b72b14309dc1b29056ed7f"
-  integrity sha512-aFEnNFO/SKpvjv+JvFRNtFVAKZ07sugPdIezW1oIjJdARfX+n/rHCYbe6B/xaI4HfH+Qw2L+7QLQBTX2HB0PIw==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-utils-once@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-utils-once/-/knockout-contrib-utils-once-2.0.0.tgz#efd745551c58e38223e2016f7091028c0f07d918"
-  integrity sha512-xkWym7+Y4IH2KTwusvWKUey73N95ktVmJL7AM0h/z1LGXb1SCKMFa9V4dibOypG6vFj1MUdibXGYWOX4cly6PQ==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib-utils-toggle@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib-utils-toggle/-/knockout-contrib-utils-toggle-2.0.0.tgz#a367f10432e37be8e484020404b22e2e02b3e3ea"
-  integrity sha512-oxPhOxzqT74wmGeeH+XEjOUAjvYapHda/VX+oGRYJpUZFBlUBeuxkIYxV1dY5wObcWGRTwUMjTxhY6WmGPbS6g==
-  dependencies:
-    babel-runtime "^6.26.0"
-
-"@profiscience/knockout-contrib@^2.0.20":
-  version "2.0.20"
-  resolved "https://registry.yarnpkg.com/@profiscience/knockout-contrib/-/knockout-contrib-2.0.20.tgz#903ea18766daaa54d31681a8e8fd8f79c292f620"
-  integrity sha512-tbhE9Ms+tvCrhnL/JO+qtKxwJXaP2m4dhRGCz/w3IXGjoEDbBdCTr0hr25m3S43WNCHWGo/tJ8IVyRRCbcQCrw==
-  dependencies:
-    "@profiscience/knockout-contrib-bindings-click-alt" "^2.0.0"
-    "@profiscience/knockout-contrib-bindings-click-ctrl" "^2.0.0"
-    "@profiscience/knockout-contrib-bindings-click-meta" "^2.0.0"
-    "@profiscience/knockout-contrib-bindings-click-shift" "^2.0.0"
-    "@profiscience/knockout-contrib-bindings-draggable" "^1.1.0"
-    "@profiscience/knockout-contrib-bindings-jquery" "^2.0.0"
-    "@profiscience/knockout-contrib-bindings-toggle" "^2.0.0"
-    "@profiscience/knockout-contrib-components-flash-message" "^2.0.9"
-    "@profiscience/knockout-contrib-filters-date-format" "^2.0.2"
-    "@profiscience/knockout-contrib-model-builders-data" "^2.3.0"
-    "@profiscience/knockout-contrib-model-builders-view" "^2.0.1"
-    "@profiscience/knockout-contrib-model-mixins-pager" "^2.1.0"
-    "@profiscience/knockout-contrib-model-mixins-query" "^1.1.10"
-    "@profiscience/knockout-contrib-model-mixins-transform" "^2.1.0"
-    "@profiscience/knockout-contrib-query" "^2.1.3"
-    "@profiscience/knockout-contrib-router" "^2.0.8"
-    "@profiscience/knockout-contrib-router-middleware-flash-message" "^2.0.9"
-    "@profiscience/knockout-contrib-router-middleware-progress-bar" "^2.0.9"
-    "@profiscience/knockout-contrib-router-middleware-scroll-position" "^2.0.9"
-    "@profiscience/knockout-contrib-router-plugins-children" "^2.0.9"
-    "@profiscience/knockout-contrib-router-plugins-component" "^2.0.9"
-    "@profiscience/knockout-contrib-router-plugins-components" "^1.0.9"
-    "@profiscience/knockout-contrib-router-plugins-init" "^2.0.9"
-    "@profiscience/knockout-contrib-router-plugins-redirect" "^2.0.9"
-    "@profiscience/knockout-contrib-router-plugins-title" "^2.0.10"
-    "@profiscience/knockout-contrib-router-plugins-with" "^2.0.9"
-    "@profiscience/knockout-contrib-utils-assign" "^2.0.2"
-    "@profiscience/knockout-contrib-utils-defaults" "^2.1.0"
-    "@profiscience/knockout-contrib-utils-from-js" "^2.0.0"
-    "@profiscience/knockout-contrib-utils-increment" "^2.0.0"
-    "@profiscience/knockout-contrib-utils-modify" "^2.0.0"
-    "@profiscience/knockout-contrib-utils-once" "^2.0.0"
-    "@profiscience/knockout-contrib-utils-toggle" "^2.0.0"
-
 "@types/anymatch@*":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
@@ -388,13 +71,6 @@
     "@types/html-minifier" "*"
     "@types/tapable" "*"
     "@types/webpack" "*"
-
-"@types/jquery@^3.3.31":
-  version "3.3.31"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.3.31.tgz#27c706e4bf488474e1cb54a71d8303f37c93451b"
-  integrity sha512-Lz4BAJihoFw5nRzKvg4nawXPzutkv7wmfQ5121avptaSIXlDNJCUuxZxX/G+9EVidZGuO0UBlk+YjKbwRKJigg==
-  dependencies:
-    "@types/sizzle" "*"
 
 "@types/json-schema@^7.0.3":
   version "7.0.3"
@@ -581,11 +257,6 @@
   version "0.2.28"
   resolved "https://registry.yarnpkg.com/@types/relateurl/-/relateurl-0.2.28.tgz#6bda7db8653fa62643f5ee69e9f69c11a392e3a6"
   integrity sha1-a9p9uGU/piZD9e5p6facEaOS46Y=
-
-"@types/sizzle@*":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
-  integrity sha512-7EJYyKTL7tFR8+gDbB6Wwz/arpGa0Mywk1TJbNzKzHtzbwVmY4HR9WqS5VV7dsBUKQmPNr192jHr/VpBluj/hg==
 
 "@types/source-list-map@*":
   version "0.1.2"
@@ -1091,11 +762,6 @@ assign-symbols@^1.0.0:
   resolved "https://registry.yarnpkg.com/assign-symbols/-/assign-symbols-1.0.0.tgz#59667f41fadd4f20ccbc2bb96b8d4f7f78ec0367"
   integrity sha1-WWZ/QfrdTyDMvCu5a41Pf3jsA2c=
 
-ast-types@0.9.6:
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.9.6.tgz#102c9e9e9005d3e7e3829bf0c4fa24ee862ee9b9"
-  integrity sha1-ECyenpAF0+fjgpvwxPok7oYu6bk=
-
 astral-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
@@ -1138,11 +804,6 @@ atob@^2.1.1:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-autobind-decorator@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/autobind-decorator/-/autobind-decorator-2.4.0.tgz#ea9e1c98708cf3b5b356f7cf9f10f265ff18239c"
-  integrity sha512-OGYhWUO72V6DafbF8PM8rm3EPbfuyMZcJhtm5/n26IDwO18pohE4eNazLoCGhPiXOCD0gEGmrbU3849QvM8bbw==
-
 aws-sign2@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.6.0.tgz#14342dd38dbcc94d0e5b87d763cd63612c0e794f"
@@ -1157,14 +818,6 @@ aws4@^1.2.1, aws4@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
   integrity sha512-ReZxvNHIOv88FlT7rxcXIIC0fPt4KZqZbOlivyWtXLt8ESx84zd3kMC6iK5jVeS2qt+g7ftS7ye4fi06X5rtRQ==
-
-babel-runtime@^6.26.0:
-  version "6.26.0"
-  resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
-  integrity sha1-llxwWGaOgrVde/4E/yM3vItWR/4=
-  dependencies:
-    core-js "^2.4.0"
-    regenerator-runtime "^0.11.0"
 
 balanced-match@^1.0.0:
   version "1.0.0"
@@ -1914,12 +1567,7 @@ copy-descriptor@^0.1.0:
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
-core-js@^2.4.0:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.3.tgz#4b70938bdffdaf64931e66e2db158f0892289c49"
-  integrity sha512-l00tmFFZOBHtYhN4Cz7k32VM7vTn3rE2ANjQDxdEN6zmXZ/xq1jQuutnmHvMG1ZJ7xd72+TA5YpUK8wz3rWsfQ==
-
-core-js@^3.1.3, core-js@^3.2.1:
+core-js@^3.2.1:
   version "3.3.6"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.3.6.tgz#6ad1650323c441f45379e176ed175c0d021eac92"
   integrity sha512-u4oM8SHwmDuh5mWZdDg9UwNVq5s1uqq6ZDLLIs07VY+VJU91i3h4f3K/pgFvtUQPGdeStrZ+odKyfyt4EnKHfA==
@@ -2030,11 +1678,6 @@ dashdash@^1.12.0:
   integrity sha1-hTz6D3y+L+1d4gMmuN1YEDX24vA=
   dependencies:
     assert-plus "^1.0.0"
-
-date-fns@^2.0.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.6.0.tgz#a5bc82e6a4c3995ae124b0ba1a71aec7b8cbd666"
-  integrity sha512-F55YxqRdEfP/eYQmQjLN798v0AwLjmZ8nMBjdQvNwEE3N/zWVrlkkqT+9seBlPlsbkybG4JmWg3Ee3dIV9BcGQ==
 
 date-now@^0.1.4:
   version "0.1.4"
@@ -2489,14 +2132,6 @@ es6-denodeify@^0.1.1:
   resolved "https://registry.yarnpkg.com/es6-denodeify/-/es6-denodeify-0.1.5.tgz#31d4d5fe9c5503e125460439310e16a2a3f39c1f"
   integrity sha1-MdTV/pxVA+ElRgQ5MQ4WoqPznB8=
 
-es6-templates@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/es6-templates/-/es6-templates-0.2.3.tgz#5cb9ac9fb1ded6eb1239342b81d792bbb4078ee4"
-  integrity sha1-XLmsn7He1usSOTQrgdeSu7QHjuQ=
-  dependencies:
-    recast "~0.11.12"
-    through "~2.3.6"
-
 escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
@@ -2625,11 +2260,6 @@ esprima@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.1.tgz#13b04cdb3e6c5d19df91ab6987a8695619b0aa71"
   integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
-
-esprima@~3.1.0:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/esprima/-/esprima-3.1.3.tgz#fdca51cee6133895e3c88d535ce49dbff62a4633"
-  integrity sha1-/cpRzuYTOJXjyI1TXOSdv/YqRjM=
 
 esquery@^1.0.1:
   version "1.0.1"
@@ -2851,11 +2481,6 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
-
-fastparse@^1.1.1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/fastparse/-/fastparse-1.1.2.tgz#91728c5a5942eced8531283c79441ee4122c35a9"
-  integrity sha512-483XLLxTVIwWK3QTrMGRqUfUpoOs/0hbQrl2oz4J0pAcm3A3bu84wxTFqGqkJzewCLdME38xJLJAxBABfQT8sQ==
 
 faye-websocket@^0.10.0:
   version "0.10.0"
@@ -3470,17 +3095,6 @@ html-entities@^1.2.1:
   resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-1.2.1.tgz#0df29351f0721163515dfb9e5543e5f6eed5162f"
   integrity sha1-DfKTUfByEWNRXfueVUPl9u7VFi8=
 
-html-loader@^0.5.5:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/html-loader/-/html-loader-0.5.5.tgz#6356dbeb0c49756d8ebd5ca327f16ff06ab5faea"
-  integrity sha512-7hIW7YinOYUpo//kSYcPB6dCKoceKLmOwjEMmhIobHuWGDVl0Nwe4l68mdG/Ru0wcUxQjVMEoZpkalZ/SE7zog==
-  dependencies:
-    es6-templates "^0.2.3"
-    fastparse "^1.1.1"
-    html-minifier "^3.5.8"
-    loader-utils "^1.1.0"
-    object-assign "^4.1.1"
-
 html-minifier@^0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/html-minifier/-/html-minifier-0.7.2.tgz#2b7959b1051a481e71cd7c6e59a64272af895cfd"
@@ -3493,7 +3107,7 @@ html-minifier@^0.7.2:
     relateurl "0.2.x"
     uglify-js "2.4.x"
 
-html-minifier@^3.2.3, html-minifier@^3.5.8:
+html-minifier@^3.2.3:
   version "3.5.21"
   resolved "https://registry.yarnpkg.com/html-minifier/-/html-minifier-3.5.21.tgz#d0040e054730e354db008463593194015212d20c"
   integrity sha512-LKUKwuJDhxNa3uf/LPR/KVjm/l3rBqtYeCOAekvG8F1vItxMUpueGd94i/asDDr8/1u7InxzFA5EeGjhhG5mMA==
@@ -4062,11 +3676,6 @@ isstream@~0.1.2:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
 
-jquery@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
-  integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
-
 js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -4142,11 +3751,6 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-jsx-dom@^6.3.1:
-  version "6.4.4"
-  resolved "https://registry.yarnpkg.com/jsx-dom/-/jsx-dom-6.4.4.tgz#466a34a321f790b7abe455413e721f14b5d589bc"
-  integrity sha512-YuBjvPFLgy85UFJiK1wMaUXS9C6HDV8Q6/GUwOZv7l6R2os5Ajh8ypqpNvBF5lR36JqBXGwhcgKoXI6WMUkUMA==
-
 keypress@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/keypress/-/keypress-0.2.1.tgz#1e80454250018dbad4c3fe94497d6e67b6269c77"
@@ -4180,16 +3784,6 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
   integrity sha512-s5kLOcnH0XqDO+FvuaLX8DDjZ18CGFk7VygH40QoKPUQhW4e2rvM0rwUq0t8IQDOwYSeLK01U90OjzBTme2QqA==
-
-knockout-punches@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/knockout-punches/-/knockout-punches-0.5.1.tgz#b42c49590c53f39516d873a331e3d814fd3d2cdd"
-  integrity sha1-tCxJWQxT85UW2HOjMePYFP09LN0=
-
-knockout@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/knockout/-/knockout-3.5.0.tgz#6d3e19bf53b1dc4d8de81c97a5ba9672443dc292"
-  integrity sha512-vBUF/IsBDzaejHkNpiquKdc5uPrImXuQ4Mb9lEfNNJ5cyHGI8ThDupR+h3eMFZhfmPE/brfwcIAn/fm0yOvJUg==
 
 lcid@^1.0.0:
   version "1.0.0"
@@ -4345,7 +3939,7 @@ loader-runner@^2.4.0:
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.4.0.tgz#ed47066bfe534d7e84c4c7b9998c2a75607d9357"
   integrity sha512-Jsmr89RcXGIwivFY21FcRrisYZfvLMTWx5kOLc+JTxtpBOG6xML0vzbc6SEQG2FO9/4Fc3wW4LVcB5DmGflaRw==
 
-loader-utils@1.2.3, loader-utils@^1.0.2, loader-utils@^1.1.0, loader-utils@^1.2.3:
+loader-utils@1.2.3, loader-utils@^1.0.2, loader-utils@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-1.2.3.tgz#1ff5dc6911c9f0a062531a4c04b609406108c2c7"
   integrity sha512-fkpz8ejdnEMG3s37wGL07iSBDg99O9D5yflE9RGNH3hRdx9SOwYfnGYdZOUIZitN8E+E2vkq3MUMYMvPYl5ZZA==
@@ -5020,7 +4614,7 @@ oauth-sign@~0.9.0:
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
   integrity sha512-fexhUFFPTGV8ybAtSIGbV6gOkSv8UtRbDBnAyLQw4QPKkgNlsH2ByPGtMUqdWkos6YCRmAqViwgZrJc/mRDzZQ==
 
-object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
+object-assign@^4.0.1, object-assign@^4.1.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
@@ -5359,11 +4953,6 @@ path-to-regexp@0.1.7:
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=
 
-path-to-regexp@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-3.0.0.tgz#c981a218f3df543fa28696be2f88e0c58d2e012a"
-  integrity sha512-ZOtfhPttCrqp2M1PBBH4X13XlvnfhIwD7yCLx+GoGoXRPQyxGOTdQMpIzPSPKXAJT/JQrdfFrgdJOyAzvgpQ9A==
-
 path-type@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-1.1.0.tgz#59c44f7ee491da704da415da5a4070ba4f8fe441"
@@ -5578,11 +5167,6 @@ pretty-error@^2.0.2:
   dependencies:
     renderkid "^2.0.1"
     utila "~0.4"
-
-private@~0.1.5:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/private/-/private-0.1.8.tgz#2381edb3689f7a53d653190060fcf822d2f368ff"
-  integrity sha512-VvivMrbvd2nKkiG38qjULzlc+4Vx4wm/whI9pQD35YrARNnhxeiRktSOhSukRLFNlzg6Br/cJPet5J/u19r/mg==
 
 process-nextick-args@~1.0.6:
   version "1.0.7"
@@ -5881,21 +5465,6 @@ readdirp@~3.2.0:
   integrity sha512-crk4Qu3pmXwgxdSgGhgA/eXiJAPQiX4GMOZZMXnqKxHX7TaoL+3gQVo/WeuAiogr07DpnfjIMpXXa+PAIvwPGQ==
   dependencies:
     picomatch "^2.0.4"
-
-recast@~0.11.12:
-  version "0.11.23"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.11.23.tgz#451fd3004ab1e4df9b4e4b66376b2a21912462d3"
-  integrity sha1-RR/TAEqx5N+bTktmN2sqIZEkYtM=
-  dependencies:
-    ast-types "0.9.6"
-    esprima "~3.1.0"
-    private "~0.1.5"
-    source-map "~0.5.0"
-
-regenerator-runtime@^0.11.0:
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
-  integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
 
 regex-not@^1.0.0, regex-not@^1.0.2:
   version "1.0.2"
@@ -6446,7 +6015,7 @@ source-map@0.1.34:
   dependencies:
     amdefine ">=0.0.4"
 
-source-map@^0.5.6, source-map@~0.5.0:
+source-map@^0.5.6:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
@@ -6830,7 +6399,7 @@ through2@^2.0.0:
     readable-stream "~2.3.6"
     xtend "~4.0.1"
 
-through@^2.3.6, through@~2.3.6:
+through@^2.3.6:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
@@ -6908,11 +6477,6 @@ toposort@^1.0.0:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/toposort/-/toposort-1.0.7.tgz#2e68442d9f64ec720b8cc89e6443ac6caa950029"
   integrity sha1-LmhELZ9k7HILjMieZEOsbKqVACk=
-
-toprogress2@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/toprogress2/-/toprogress2-2.0.0.tgz#c98666972f8c0377aaa2180c1a8ac4005e9715a0"
-  integrity sha512-dR3+yA7bmpUpJtH8H4DvJZt3pXI3LD48esZuDKONGDihWonWDWnhItXBfoVKzB5pNY5t8SencFdk94oIb0fxrw==
 
 tough-cookie@^2.3.1, tough-cookie@^2.3.3:
   version "2.5.0"

@@ -37,7 +37,6 @@ export default {
           {
             loader: 'ts-loader',
             options: {
-              // transpileOnly: true,
               experimentalWatchApi: true
             }
           }
@@ -53,18 +52,6 @@ export default {
             options: PRODUCTION ? {} : { debug: true, forceWatch: true }
           }
         ]
-      },
-      {
-        test: /\.html$/,
-        use: {
-          loader: 'html-loader',
-          options: {
-            removeAttributeQuotes: false,
-            minifyJS: false,
-            ignoreCustomComments: [/^\s*\/?ko/],
-            ignoreCustomFragments: [/{{[^}]+}}/]
-          }
-        }
       }
     ]
   },
