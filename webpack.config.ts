@@ -1,5 +1,5 @@
 import * as path from 'path'
-import TSCheckerPlugin from 'fork-ts-checker-webpack-plugin'
+// import TSCheckerPlugin from 'fork-ts-checker-webpack-plugin'
 import HtmlPlugin from 'html-webpack-plugin'
 
 const PRODUCTION = process.env.NODE_ENV === 'production'
@@ -38,9 +38,20 @@ export default {
           {
             loader: 'ts-loader',
             options: {
-              transpileOnly: true,
+              // transpileOnly: true,
               experimentalWatchApi: true
             }
+          }
+        ]
+      },
+      {
+        test: [/\.elm$/],
+        exclude: [/elm-stuff/, /node_modules/],
+        use: [
+          { loader: 'elm-hot-webpack-loader' },
+          {
+            loader: 'elm-webpack-loader',
+            options: PRODUCTION ? {} : { debug: true, forceWatch: true }
           }
         ]
       },
@@ -62,13 +73,12 @@ export default {
   plugins: [
     new HtmlPlugin({
       template: 'src/index.html'
-    }),
-    new TSCheckerPlugin()
+    })
+    // new TSCheckerPlugin()
   ],
 
   resolve: {
-    mainFields: ['esnext', 'es2015', 'module', 'main'],
     modules: [path.join(__dirname, 'src'), 'node_modules'],
-    extensions: ['.js', '.ts']
+    extensions: ['.js', '.ts', '.elm']
   }
 }
