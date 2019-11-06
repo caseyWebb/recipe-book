@@ -1,12 +1,12 @@
 import { Elm } from './Main'
-import * as recipes from './data/recipes'
+import * as recipe from './Data/Recipe'
 
 const app = Elm.Main.init({
   flags: null,
   node: document.body
 })
 
-callAndRespond(app.ports.fetchRecipes, app.ports.receiveRecipes, recipes.list)
+callAndRespond(app.ports.fetchRecipes, app.ports.receiveRecipes, recipe.list)
 
 interface Call {
   subscribe(cb: () => any): void

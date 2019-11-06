@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Page.Recipes.List as ListRecipes
+import Pages.Recipes.List as ListRecipes
 
 
 main : Program () ListRecipes.Model ListRecipes.Msg

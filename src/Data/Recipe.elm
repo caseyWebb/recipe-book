@@ -1,4 +1,4 @@
-port module Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
+port module Data.Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
 
 
 type alias Recipe =

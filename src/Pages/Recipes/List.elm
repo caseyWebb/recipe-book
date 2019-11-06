@@ -1,9 +1,9 @@
-module Page.Recipes.List exposing (Model, Msg, init, subscriptions, update, view)
+module Pages.Recipes.List exposing (Model, Msg, init, subscriptions, update, view)
 
+import Data.Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
 
 
 type alias Model =

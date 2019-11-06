@@ -1,5 +1,4 @@
 import * as path from 'path'
-// import TSCheckerPlugin from 'fork-ts-checker-webpack-plugin'
 import HtmlPlugin from 'html-webpack-plugin'
 
 const PRODUCTION = process.env.NODE_ENV === 'production'
@@ -70,12 +69,7 @@ export default {
     ]
   },
 
-  plugins: [
-    new HtmlPlugin({
-      template: 'src/index.html'
-    })
-    // new TSCheckerPlugin()
-  ],
+  plugins: [new HtmlPlugin()],
 
   resolve: {
     modules: [path.join(__dirname, 'src'), 'node_modules'],
