@@ -1,4 +1,3 @@
-import { Ingredient } from './ingredients'
 import * as ko from 'knockout'
 import PouchDB from 'pouchdb'
 import pouchDbFind from 'pouchdb-find'
@@ -10,31 +9,30 @@ import { GroceryStoreSection, MeasurementUnitType } from 'enum'
 
 PouchDB.plugin(pouchDbFind)
 
-const db = new PouchDB<Unwrapped<Ingredient>>('ingredients')
+const db = new PouchDB<IngredientSchema>('ingredients')
 
-export interface Ingredient {
-  _id: null | string
-  readonly _ref?: string
-  readonly name: ko.Observable<string>
-  readonly unitType: ko.Observable<MeasurementUnitType>
-  readonly groceryStoreSection: ko.Observable<keyof typeof GroceryStoreSection>
-  readonly note: ko.Observable<string>
+type IngredientSchema = {
+  _id: string
+  _ref: string
+  name: string
+  unitType: keyof typeof MeasurementUnitType
+  groceryStoreSection: keyof typeof GroceryStoreSection
+  note: string
 }
 
-export interface IngredientModel extends Ingredient {}
 export class IngredientModel extends DataModelConstructorBuilder<{
   id: null | string
 }> {
   public _id: null | string = null
   public readonly _ref?: string
-  public readonly name = ko.observable()
-  public readonly unitType = ko.observable()
-  public readonly groceryStoreSection = ko.observable()
-  public readonly note = ko.observable()
+  public readonly name = ko.observable('')
+  public readonly unitType = ko.observable<MeasurementUnitType>()
+  public readonly groceryStoreSection = ko.observable<
+    keyof typeof GroceryStoreSection
+  >()
+  public readonly note = ko.observable('')
 
-  protected async fetch(
-    initData?: Unwrapped<Partial<Ingredient>>
-  ): Promise<any> {
+  protected async fetch(initData?: IngredientSchema): Promise<any> {
     const id = this.params.id
     if (initData) return initData
     if (id === null) return {}

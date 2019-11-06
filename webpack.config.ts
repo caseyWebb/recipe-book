@@ -15,7 +15,7 @@ export default {
     publicPath: '/'
   },
 
-  devtool: 'inline-source-map',
+  devtool: PRODUCTION ? 'source-map' : 'inline-source-map',
 
   devServer: {
     historyApiFallback: true,

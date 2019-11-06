@@ -6,11 +6,9 @@
 
   <label>
     Unit Type
-    <select value="{{ params.ingredient.unitType }}">
-      <option>Discrete</option>
-      <option>Volumetric</option>
-      <option>Weight</option>
-    </select>
+    <select
+      data-bind="value: params.ingredient.unitType, options: unitTypes"
+    ></select>
   </label>
 
   <label>

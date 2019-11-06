@@ -1,7 +1,7 @@
 export enum MeasurementUnitType {
-  Discrete,
-  Volumetric,
-  Weight
+  Discrete = 'discrete',
+  Volumetric = 'volumetric',
+  Weight = 'weight'
 }
 
 export enum DiscreteUnit {

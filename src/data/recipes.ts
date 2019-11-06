@@ -4,18 +4,12 @@ import { DataModelConstructorBuilder } from '@profiscience/knockout-contrib'
 import { IngredientModel } from 'data'
 import { DiscreteUnit, VolumetricUnit, WeightUnit } from 'enum'
 
-const db = new PouchDB<Recipe>('recipes')
+const db = new PouchDB<RecipeSchema>('recipes')
 
-export type RecipeIngredient = {
-  quantity: number
-  unit: DiscreteUnit | VolumetricUnit | WeightUnit
-  ingredient: IngredientModel
-}
-
-interface Recipe {
+type RecipeSchema = {
   readonly _id: string
   readonly _ref: string
-  readonly title: ko.Observable<string>
+  readonly title: string
   readonly ingredients: ko.ObservableArray<RecipeIngredient>
 
   // directions: string[]
@@ -30,11 +24,16 @@ interface Recipe {
   // pairsWithRecipeIds: string[]
 }
 
-export interface RecipeModel extends Recipe {}
+export type RecipeIngredient = {
+  quantity: number
+  unit: DiscreteUnit | VolumetricUnit | WeightUnit
+  ingredient: IngredientModel
+}
+
 export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
-  public readonly _id!: string
+  public _id!: string
   public readonly _ref!: string
-  public readonly title = ko.observable()
+  public readonly title = ko.observable('')
   public readonly ingredients = ko.observableArray<RecipeIngredient>()
 
   protected async fetch() {
@@ -45,7 +44,7 @@ export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
         title: 'New Recipe'
       }
     } else {
-      return (await db.get(this.params.id)) as Recipe
+      return await db.get(this.params.id)
     }
   }
 
@@ -56,13 +55,13 @@ export class RecipeModel extends DataModelConstructorBuilder<{ id: string }> {
     }
     await db.put(doc)
     await super.save()
-    ;(this as any)._id = doc._id
+    this._id = doc._id
   }
 }
 
 export class RecipesCollection extends DataModelConstructorBuilder<{}> {
   public count!: number
-  public docs!: Recipe[]
+  public docs = ko.observableArray<RecipeModel>()
 
   constructor() {
     super({})
