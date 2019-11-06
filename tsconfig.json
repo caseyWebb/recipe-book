@@ -5,19 +5,9 @@
     "importHelpers": true,
     "strict": true,
     "moduleResolution": "node",
-    "lib": ["dom", "es5", "es2015", "es2017", "esnext"],
-    "typeRoots": ["@types", "node_modules/@types"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
     "baseUrl": "./",
-    "jsx": "preserve",
-    "paths": {
-      "*": [
-        "src/*",
-        "node_modules/@types/*", // https://www.reddit.com/r/typescript/comments/8cp4z3/npm_link_and_types_and_duplicate_deps_mess/dxiatia
-        "*"
-      ]
-    }
+    "jsx": "preserve"
   }
 }

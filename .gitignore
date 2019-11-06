@@ -1,6 +1,7 @@
 dist/
 elm-stuff/
 node_modules/
+src/**/*.d.ts
 
 repl-temp-*
 *.log

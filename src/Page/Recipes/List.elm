@@ -7,8 +7,7 @@ import Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
 
 
 type alias Model =
-    { recipes : RecipeList
-    }
+    RecipeList
 
 
 type Msg
@@ -18,7 +17,7 @@ type Msg
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { recipes = { count = 0, recipes = [] } }, fetchRecipes () )
+    ( { count = 0, recipes = [] }, fetchRecipes () )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -28,12 +27,12 @@ update msg model =
             ( model, fetchRecipes () )
 
         RecipesRecieved response ->
-            ( { model | recipes = response }, Cmd.none )
+            ( response, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
-    div [] [ button [ onClick FetchRecipes ] [ text "Refresh Recipes" ], viewRecipes model.recipes ]
+    div [] [ button [ onClick FetchRecipes ] [ text "Refresh Recipes" ], viewRecipes model ]
 
 
 subscriptions : Model -> Sub Msg
