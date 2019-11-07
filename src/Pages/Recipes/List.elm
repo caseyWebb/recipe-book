@@ -32,7 +32,14 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [] [ button [ onClick FetchRecipes ] [ text "Refresh Recipes" ], viewRecipes model ]
+    div []
+        [ button [ onClick FetchRecipes ] [ text "Refresh Recipes" ]
+        , br [] []
+        , br [] []
+        , a [ href "/recipes/new" ]
+            [ text "New Recipe" ]
+        , viewRecipes model
+        ]
 
 
 subscriptions : Model -> Sub Msg
@@ -59,7 +66,18 @@ viewTableHeader =
 
 viewRecipe : Recipe -> Html Msg
 viewRecipe recipe =
+    let
+        recipePath =
+            case recipe.id of
+                Just id ->
+                    "/recipes/" ++ id
+
+                Nothing ->
+                    "#"
+    in
     tr []
         [ td []
             [ text recipe.name ]
+        , td []
+            [ a [ href recipePath ] [ text "Edit" ] ]
         ]

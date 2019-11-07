@@ -7,11 +7,12 @@ const app = Elm.Main.init({
 })
 
 callAndRespond(app.ports.fetchRecipes, app.ports.receiveRecipes, recipe.list)
+callAndRespond(app.ports.saveRecipe, app.ports.recipeSaved, recipe.save)
 
-function callAndRespond<T>(
-  call: { subscribe(cb: () => unknown): void },
-  respond: { send(data: T): void },
-  resolve: () => Promise<T>
+function callAndRespond<TIn, TOut>(
+  call: { subscribe(cb: (arg: TIn) => unknown): void },
+  respond: { send(data: TOut): void },
+  resolve: (arg: TIn) => Promise<TOut>
 ): void {
-  call.subscribe(async () => respond.send(await resolve()))
+  call.subscribe(async (data) => respond.send(await resolve(data)))
 }

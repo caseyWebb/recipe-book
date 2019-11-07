@@ -8,7 +8,7 @@ const db = new PouchDB<RecipeSchema>('recipes')
 
 type RecipeSchema = {
   readonly _id: string
-  readonly _ref: string
+  readonly _rev?: string
   name: string
   // ingredients: {
   //   quantity: number
@@ -28,7 +28,9 @@ type RecipeSchema = {
   // pairsWithRecipeIds: string[]
 }
 
-export type Recipe = Omit<RecipeSchema, 'ingredients'> & {
+export type Recipe = Omit<RecipeSchema, 'ingredients' | '_id' | '_rev'> & {
+  id: null | string
+  rev: null | string
   // ingredients: {
   //   quantity: number
   //   unit: string
@@ -36,7 +38,7 @@ export type Recipe = Omit<RecipeSchema, 'ingredients'> & {
   // }[]
 }
 
-export async function fetchById(id: string) {
+export async function fetchById(id: string): Promise<Recipe> {
   const doc = await db.get(id)
   // const ingredients = await Promise.all(
   //   doc.ingredients.map(async (i) => ({
@@ -45,35 +47,45 @@ export async function fetchById(id: string) {
   //   }))
   // )
   return {
-    ...doc
+    ...doc,
+    id: doc._id,
+    rev: doc._rev
     // ingredients
   }
 }
 
-export async function save(recipe: Recipe) {
-  const _id =
-    recipe._id === null
-      ? recipe.name.toLowerCase().replace(/\s/g, '-')
-      : recipe._id
+export async function save(recipe: Recipe): Promise<null> {
+  const doc = {
+    _id:
+      recipe.id === null
+        ? recipe.name.toLowerCase().replace(/\s/g, '-')
+        : recipe.id,
+    _rev: recipe.rev || undefined,
+    name: recipe.name
+  }
+  // if (doc._ref === null) delete doc._ref
   // const ingredients = recipe.ingredients.map((i) => ({
   //   quantity: i.quantity,
   //   unit: i.unit,
   //   ingredientId: i.ingredient._id
   // }))
-  await db.put({
-    ...recipe,
-    _id
-    // ingredients
-  })
+  try {
+    await db.put(doc)
+  } catch (e) {
+    return e.message
+  }
+  return null
 }
 
-export async function list() {
+export async function list(): Promise<{ count: number; recipes: Recipe[] }> {
   const { total_rows: count, rows } = await db.allDocs({ include_docs: true })
-  return {
+  const ret = {
     count,
     recipes: rows.map((r) => ({
       id: r.doc!._id,
+      rev: r.doc!._rev,
       name: r.doc!.name
     }))
   }
+  return ret
 }

@@ -7,7 +7,7 @@ const db = new PouchDB<Ingredient>('ingredients')
 
 export type Ingredient = {
   readonly _id: string
-  readonly _ref: string
+  readonly _rev: string
   name: string
   unitType: string
   groceryStoreSection: string
