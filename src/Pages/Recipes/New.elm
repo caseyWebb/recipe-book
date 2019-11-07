@@ -4,7 +4,7 @@ import Browser.Navigation as Nav
 import Data.Recipe exposing (Recipe, createRecipe, recipeSaved, saveRecipe)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onInput, onSubmit)
 import Route exposing (..)
 import Selectize
 
@@ -118,7 +118,7 @@ view model =
 
 recipeForm : Model -> Html Msg
 recipeForm model =
-    Html.form []
+    Html.form [ onSubmit SaveRecipe ]
         [ div []
             [ text "Name"
             , br [] []
@@ -133,7 +133,7 @@ recipeForm model =
                 |> Html.map NewIngredientMenuMsg
             ]
         , div []
-            [ button [ type_ "button", onClick SaveRecipe ] [ text "Submit" ] ]
+            [ button [ type_ "submit" ] [ text "Submit" ] ]
         ]
 
 
