@@ -8,7 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Route exposing (..)
 import Selectize
-import UI exposing (header, textInput)
+import UI
 
 
 type alias Model =
@@ -115,7 +115,7 @@ view model =
     Element.layout [] <|
         Element.column
             []
-            [ header "New Recipe"
+            [ UI.header "New Recipe"
             , recipeForm model
             ]
 
@@ -124,7 +124,7 @@ recipeForm : Model -> Element.Element Msg
 recipeForm model =
     let
         titleInput =
-            textInput
+            UI.textInput
                 { onChange = \s -> UpdateName s
                 , text = model.recipe.name
                 , placeholder = Nothing
