@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Route exposing (..)
+import Selectize
 
 
 type alias Model =
@@ -13,12 +14,16 @@ type alias Model =
     , recipe : Recipe
     , saving : Bool
     , saveError : Maybe String
+    , newIngredientSelection : Maybe String
+    , newIngredientMenu : Selectize.State String
     }
 
 
 type Msg
     = SaveRecipe
     | RecipeSaved (Maybe String)
+    | NewIngredientMenuMsg (Selectize.Msg String)
+    | SelectNewIngredient (Maybe String)
     | UpdateName String
 
 
@@ -30,6 +35,12 @@ init navKey =
             , saving = False
             , recipe = createRecipe
             , saveError = Nothing
+            , newIngredientSelection = Nothing
+            , newIngredientMenu =
+                Selectize.closed
+                    "ingredient-menu"
+                    identity
+                    (ingredients |> List.map Selectize.entry)
             }
     in
     ( initialModel, Cmd.none )
@@ -48,6 +59,31 @@ update msg model =
             in
             ( { model | recipe = updatedRecipe }, Cmd.none )
 
+        NewIngredientMenuMsg selectizeMsg ->
+            let
+                ( newMenu, menuCmd, maybeMsg ) =
+                    Selectize.update SelectNewIngredient
+                        model.newIngredientSelection
+                        model.newIngredientMenu
+                        selectizeMsg
+
+                newModel =
+                    { model | newIngredientMenu = newMenu }
+
+                cmd =
+                    menuCmd |> Cmd.map NewIngredientMenuMsg
+            in
+            case maybeMsg of
+                Just nextMsg ->
+                    update nextMsg newModel
+                        |> andDo cmd
+
+                Nothing ->
+                    ( newModel, cmd )
+
+        SelectNewIngredient ingredient ->
+            ( { model | newIngredientSelection = ingredient }, Cmd.none )
+
         SaveRecipe ->
             ( { model | saving = True }, saveRecipe model.recipe )
 
@@ -60,6 +96,13 @@ update msg model =
                     ( { model | saving = False }, Route.pushUrl Route.Recipes model.navKey )
 
 
+andDo : Cmd msg -> ( model, Cmd msg ) -> ( model, Cmd msg )
+andDo cmd ( model, cmds ) =
+    ( model
+    , Cmd.batch [ cmd, cmds ]
+    )
+
+
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     recipeSaved <| \err -> RecipeSaved err
@@ -69,12 +112,12 @@ view : Model -> Html Msg
 view model =
     div []
         [ h3 [] [ text "New Recipe" ]
-        , recipeForm
+        , recipeForm model
         ]
 
 
-recipeForm : Html Msg
-recipeForm =
+recipeForm : Model -> Html Msg
+recipeForm model =
     Html.form []
         [ div []
             [ text "Name"
@@ -83,5 +126,72 @@ recipeForm =
             ]
         , br [] []
         , div []
+            [ Selectize.view
+                newIngredientViewConfig
+                model.newIngredientSelection
+                model.newIngredientMenu
+                |> Html.map NewIngredientMenuMsg
+            ]
+        , div []
             [ button [ type_ "button", onClick SaveRecipe ] [ text "Submit" ] ]
         ]
+
+
+newIngredientViewConfig : Selectize.ViewConfig String
+newIngredientViewConfig =
+    let
+        viewConfig selector =
+            Selectize.viewConfig
+                { container = []
+                , menu =
+                    [ class "selectize__menu" ]
+                , ul =
+                    [ class "selectize__list" ]
+                , entry =
+                    \tree mouseFocused keyboardFocused ->
+                        { attributes =
+                            [ class "selectize__item"
+                            , classList
+                                [ ( "selectize__item--mouse-selected"
+                                  , mouseFocused
+                                  )
+                                , ( "selectize__item--key-selected"
+                                  , keyboardFocused
+                                  )
+                                ]
+                            ]
+                        , children =
+                            [ Html.text tree ]
+                        }
+                , divider =
+                    \title ->
+                        { attributes =
+                            [ class "selectize__divider" ]
+                        , children =
+                            [ Html.text title ]
+                        }
+                , input = selector
+                }
+
+        textfieldSelector =
+            Selectize.autocomplete <|
+                { attrs =
+                    \sthSelected open ->
+                        [ class "selectize__textfield"
+                        , classList
+                            [ ( "selectize__textfield--selection", sthSelected )
+                            , ( "selectize__textfield--no-selection", not sthSelected )
+                            , ( "selectize__textfield--menu-open", open )
+                            ]
+                        ]
+                , toggleButton = Nothing
+                , clearButton = Nothing
+                , placeholder = "Add New Ingredient"
+                }
+    in
+    viewConfig textfieldSelector
+
+
+ingredients : List String
+ingredients =
+    [ "Garlic", "Onion", "Canned Tomatoes", "Olive Oil", "Spaghetti" ]
