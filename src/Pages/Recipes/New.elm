@@ -3,14 +3,12 @@ module Pages.Recipes.New exposing (Model, Msg, init, subscriptions, update, view
 import Browser.Navigation as Nav
 import Data.Recipe exposing (Recipe, createRecipe, recipeSaved, saveRecipe)
 import Element
-import Element.Border as Border
-import Element.Font as Font
 import Element.Input as Input
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onSubmit)
 import Route exposing (..)
 import Selectize
+import UI exposing (header, textInput)
 
 
 type alias Model =
@@ -120,31 +118,6 @@ view model =
             [ header "New Recipe"
             , recipeForm model
             ]
-
-
-header : String -> Element.Element msg
-header text =
-    Element.el
-        [ Font.size 24
-        , Font.bold
-        ]
-    <|
-        Element.text text
-
-
-type alias TextInputOptions msg =
-    { onChange : String -> msg
-    , text : String
-    , placeholder : Maybe (Input.Placeholder msg)
-    , label : Input.Label msg
-    }
-
-
-textInput : TextInputOptions msg -> Element.Element msg
-textInput =
-    Input.text
-        [ Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
-        ]
 
 
 recipeForm : Model -> Element.Element Msg
