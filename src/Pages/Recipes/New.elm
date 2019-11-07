@@ -2,6 +2,10 @@ module Pages.Recipes.New exposing (Model, Msg, init, subscriptions, update, view
 
 import Browser.Navigation as Nav
 import Data.Recipe exposing (Recipe, createRecipe, recipeSaved, saveRecipe)
+import Element
+import Element.Border as Border
+import Element.Font as Font
+import Element.Input as Input
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onSubmit)
@@ -110,31 +114,60 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ h3 [] [ text "New Recipe" ]
-        , recipeForm model
+    Element.layout [] <|
+        Element.column
+            []
+            [ header "New Recipe"
+            , recipeForm model
+            ]
+
+
+header : String -> Element.Element msg
+header text =
+    Element.el
+        [ Font.size 24
+        , Font.bold
+        ]
+    <|
+        Element.text text
+
+
+type alias TextInputOptions msg =
+    { onChange : String -> msg
+    , text : String
+    , placeholder : Maybe (Input.Placeholder msg)
+    , label : Input.Label msg
+    }
+
+
+textInput : TextInputOptions msg -> Element.Element msg
+textInput =
+    Input.text
+        [ Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
         ]
 
 
-recipeForm : Model -> Html Msg
+recipeForm : Model -> Element.Element Msg
 recipeForm model =
-    Html.form [ onSubmit SaveRecipe ]
-        [ div []
-            [ text "Name"
-            , br [] []
-            , input [ type_ "text", onInput UpdateName ] []
-            ]
-        , br [] []
-        , div []
-            [ Selectize.view
+    let
+        titleInput =
+            textInput
+                { onChange = \s -> UpdateName s
+                , text = model.recipe.name
+                , placeholder = Nothing
+                , label = Input.labelLeft [] (Element.text "Title")
+                }
+
+        newIngredientInput =
+            Selectize.view
                 newIngredientViewConfig
                 model.newIngredientSelection
                 model.newIngredientMenu
                 |> Html.map NewIngredientMenuMsg
-            ]
-        , div []
-            [ button [ type_ "submit" ] [ text "Submit" ] ]
-        ]
+                |> Element.html
+    in
+    Element.column []
+        [ titleInput, newIngredientInput ]
 
 
 newIngredientViewConfig : Selectize.ViewConfig String
