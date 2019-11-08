@@ -1,6 +1,8 @@
 import { Elm } from './Main'
 import * as recipe from './Data/Recipe'
 
+import './Styles/Main.css'
+
 const app = Elm.Main.init({
   flags: null,
   node: document.body

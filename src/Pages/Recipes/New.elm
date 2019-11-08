@@ -3,7 +3,6 @@ module Pages.Recipes.New exposing (Model, Msg, init, subscriptions, update, view
 import Browser.Navigation as Nav
 import Data.Recipe exposing (Recipe, createRecipe, recipeSaved, saveRecipe)
 import Element
-import Element.Input as Input
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Route exposing (..)
@@ -128,74 +127,21 @@ recipeForm model =
                 { onChange = \s -> UpdateName s
                 , text = model.recipe.name
                 , placeholder = Nothing
-                , label = Input.labelLeft [] (Element.text "Title")
+                , label = "Title"
                 }
 
         newIngredientInput =
-            Selectize.view
-                newIngredientViewConfig
-                model.newIngredientSelection
-                model.newIngredientMenu
-                |> Html.map NewIngredientMenuMsg
-                |> Element.html
+            UI.autocompleteInput
+                { placeholder = "Add Ingredient"
+                , selection = model.newIngredientSelection
+                , menu = model.newIngredientMenu
+                , msg = NewIngredientMenuMsg
+                }
     in
     Element.column []
-        [ titleInput, newIngredientInput ]
-
-
-newIngredientViewConfig : Selectize.ViewConfig String
-newIngredientViewConfig =
-    let
-        viewConfig selector =
-            Selectize.viewConfig
-                { container = []
-                , menu =
-                    [ class "selectize__menu" ]
-                , ul =
-                    [ class "selectize__list" ]
-                , entry =
-                    \tree mouseFocused keyboardFocused ->
-                        { attributes =
-                            [ class "selectize__item"
-                            , classList
-                                [ ( "selectize__item--mouse-selected"
-                                  , mouseFocused
-                                  )
-                                , ( "selectize__item--key-selected"
-                                  , keyboardFocused
-                                  )
-                                ]
-                            ]
-                        , children =
-                            [ Html.text tree ]
-                        }
-                , divider =
-                    \title ->
-                        { attributes =
-                            [ class "selectize__divider" ]
-                        , children =
-                            [ Html.text title ]
-                        }
-                , input = selector
-                }
-
-        textfieldSelector =
-            Selectize.autocomplete <|
-                { attrs =
-                    \sthSelected open ->
-                        [ class "selectize__textfield"
-                        , classList
-                            [ ( "selectize__textfield--selection", sthSelected )
-                            , ( "selectize__textfield--no-selection", not sthSelected )
-                            , ( "selectize__textfield--menu-open", open )
-                            ]
-                        ]
-                , toggleButton = Nothing
-                , clearButton = Nothing
-                , placeholder = "Add New Ingredient"
-                }
-    in
-    viewConfig textfieldSelector
+        [ titleInput
+        , newIngredientInput
+        ]
 
 
 ingredients : List String

@@ -52,6 +52,23 @@ export default {
             options: PRODUCTION ? {} : { debug: true, forceWatch: true }
           }
         ]
+      },
+      {
+        test: /\.css$/,
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader', options: { importLoaders: 1 } },
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [
+                require('autoprefixer')(),
+                require('postcss-preset-env')({ stage: 1 }),
+                ...(PRODUCTION ? [require('cssnano')()] : [])
+              ]
+            }
+          }
+        ]
       }
     ]
   },
