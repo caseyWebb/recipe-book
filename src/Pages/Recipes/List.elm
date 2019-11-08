@@ -1,8 +1,7 @@
 module Pages.Recipes.List exposing (Model, Msg, init, subscriptions, update, view)
 
 import Data.Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Element
 import Html.Events exposing (onClick)
 
 
@@ -30,41 +29,30 @@ update msg model =
             ( response, Cmd.none )
 
 
-view : Model -> Html Msg
-view model =
-    div []
-        [ button [ onClick FetchRecipes ] [ text "Refresh Recipes" ]
-        , br [] []
-        , br [] []
-        , a [ href "/recipes/new" ]
-            [ text "New Recipe" ]
-        , viewRecipes model
-        ]
-
-
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     receiveRecipes RecipesRecieved
 
 
-viewRecipes : RecipeList -> Html Msg
+view : Model -> Element.Element Msg
+view model =
+    Element.column []
+        [ Element.link [] { url = "/recipes/new", label = Element.text "New Recipe" }
+        , viewRecipes model
+        ]
+
+
+viewRecipes : RecipeList -> Element.Element Msg
 viewRecipes recipes =
-    div []
-        [ h3 [] [ text "Recipes" ]
-        , table []
-            (viewTableHeader :: List.map viewRecipe recipes.recipes)
-        ]
+    Element.table []
+        { data = recipes.recipes
+        , columns =
+            [ { header = Element.text "Title", width = Element.fill, view = viewRecipe }
+            ]
+        }
 
 
-viewTableHeader : Html Msg
-viewTableHeader =
-    tr []
-        [ th []
-            [ text "Title" ]
-        ]
-
-
-viewRecipe : Recipe -> Html Msg
+viewRecipe : Recipe -> Element.Element Msg
 viewRecipe recipe =
     let
         recipePath =
@@ -75,9 +63,4 @@ viewRecipe recipe =
                 Nothing ->
                     "#"
     in
-    tr []
-        [ td []
-            [ text recipe.name ]
-        , td []
-            [ a [ href recipePath ] [ text "Edit" ] ]
-        ]
+    Element.link [] { url = recipePath, label = Element.text "Edit" }

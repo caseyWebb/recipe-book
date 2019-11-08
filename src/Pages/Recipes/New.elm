@@ -109,14 +109,13 @@ subscriptions _ =
     recipeSaved <| \err -> RecipeSaved err
 
 
-view : Model -> Html Msg
+view : Model -> Element.Element Msg
 view model =
-    UI.render <|
-        Element.column
-            []
-            [ UI.header "New Recipe"
-            , recipeForm model
-            ]
+    Element.column
+        []
+        [ UI.header "New Recipe"
+        , recipeForm model
+        ]
 
 
 recipeForm : Model -> Element.Element Msg

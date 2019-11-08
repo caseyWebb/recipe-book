@@ -2,10 +2,11 @@ module Main exposing (main)
 
 import Browser exposing (Document, UrlRequest)
 import Browser.Navigation as Nav
-import Html exposing (..)
+import Element
 import Pages.Recipes.List as ListRecipes
 import Pages.Recipes.New as NewRecipe
 import Route exposing (Route)
+import UI
 import Url exposing (Url)
 
 
@@ -83,26 +84,26 @@ initCurrentPage ( model, existingCmds ) =
 view : Model -> Document Msg
 view model =
     { title = "Recipe Book"
-    , body = [ currentView model ]
+    , body = [ currentView model |> UI.render ]
     }
 
 
-currentView : Model -> Html Msg
+currentView : Model -> Element.Element Msg
 currentView model =
     case model.page of
         NotFoundPage ->
             notFoundView
 
         RecipeList recipeListModel ->
-            ListRecipes.view recipeListModel |> Html.map ListRecipesMsg
+            ListRecipes.view recipeListModel |> Element.map ListRecipesMsg
 
         NewRecipe newRecipeModel ->
-            NewRecipe.view newRecipeModel |> Html.map NewRecipeMsg
+            NewRecipe.view newRecipeModel |> Element.map NewRecipeMsg
 
 
-notFoundView : Html msg
+notFoundView : Element.Element msg
 notFoundView =
-    h3 [] [ text "404" ]
+    UI.header "404"
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
