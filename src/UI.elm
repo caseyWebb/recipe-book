@@ -1,4 +1,4 @@
-module UI exposing (TextInputOptions, autocompleteInput, header, textInput)
+module UI exposing (TextInputOptions, autocompleteInput, header, render, textInput)
 
 import Element exposing (Element, el, text)
 import Element.Border as Border
@@ -7,6 +7,19 @@ import Element.Input as Input
 import Html
 import Html.Attributes
 import Selectize
+
+
+render : Element msg -> Html.Html msg
+render el =
+    Element.layout
+        [ Font.family
+            [ Font.typeface "Source Sans Pro"
+            , Font.typeface "Helvetica Neue"
+            , Font.sansSerif
+            ]
+        ]
+    <|
+        el
 
 
 header : String -> Element msg

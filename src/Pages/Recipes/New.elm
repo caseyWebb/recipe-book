@@ -111,7 +111,7 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
-    Element.layout [] <|
+    UI.render <|
         Element.column
             []
             [ UI.header "New Recipe"
