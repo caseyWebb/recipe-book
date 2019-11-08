@@ -136,10 +136,14 @@ recipeForm model =
                 , menu = model.newIngredientMenu
                 , msg = NewIngredientMenuMsg
                 }
+
+        saveButton =
+            UI.button { onPress = Just SaveRecipe, label = "Save Recipe" }
     in
     Element.column []
         [ titleInput
         , newIngredientInput
+        , saveButton
         ]
 
 

@@ -1,4 +1,4 @@
-module UI exposing (TextInputOptions, autocompleteInput, header, render, textInput)
+module UI exposing (TextInputOptions, autocompleteInput, button, header, render, textInput)
 
 import Element exposing (Element, el, text)
 import Element.Border as Border
@@ -30,6 +30,18 @@ header t =
         ]
     <|
         text t
+
+
+type alias ButtonOptions msg =
+    { onPress : Maybe msg, label : String }
+
+
+button : ButtonOptions msg -> Element msg
+button opts =
+    Input.button []
+        { onPress = opts.onPress
+        , label = text opts.label
+        }
 
 
 type alias TextInputOptions msg =

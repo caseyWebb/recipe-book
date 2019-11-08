@@ -2,7 +2,6 @@ module Pages.Recipes.List exposing (Model, Msg, init, subscriptions, update, vie
 
 import Data.Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
 import Element
-import Html.Events exposing (onClick)
 
 
 type alias Model =
@@ -10,8 +9,7 @@ type alias Model =
 
 
 type Msg
-    = FetchRecipes
-    | RecipesRecieved RecipeList
+    = RecipesRecieved RecipeList
 
 
 init : ( Model, Cmd Msg )
@@ -20,11 +18,8 @@ init =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg _ =
     case msg of
-        FetchRecipes ->
-            ( model, fetchRecipes () )
-
         RecipesRecieved response ->
             ( response, Cmd.none )
 
@@ -63,4 +58,4 @@ viewRecipe recipe =
                 Nothing ->
                     "#"
     in
-    Element.link [] { url = recipePath, label = Element.text "Edit" }
+    Element.link [] { url = recipePath, label = Element.text recipe.name }

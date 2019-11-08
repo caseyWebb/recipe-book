@@ -16,5 +16,6 @@ function callAndRespond<TIn, TOut>(
   respond: { send(data: TOut): void },
   resolve: (arg: TIn) => Promise<TOut>
 ): void {
+  console.log('port called')
   call.subscribe(async (data) => respond.send(await resolve(data)))
 }
