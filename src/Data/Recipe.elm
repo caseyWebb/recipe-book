@@ -1,9 +1,9 @@
 port module Data.Recipe exposing
     ( Recipe
     , RecipeList
-    , createRecipe
     , fetchRecipes
     , findRecipeById
+    , newRecipe
     , receiveRecipe
     , receiveRecipes
     , recipeSaved
@@ -24,8 +24,8 @@ type alias RecipeList =
     }
 
 
-createRecipe : Recipe
-createRecipe =
+newRecipe : Recipe
+newRecipe =
     { id = Nothing
     , rev = Nothing
     , name = ""

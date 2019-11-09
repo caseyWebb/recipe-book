@@ -1,19 +1,23 @@
-module Pages.Recipes.New exposing (Model, Msg, init, subscriptions, update, view)
+module Pages.Recipes.Editor exposing (Model, Msg, init, subscriptions, update, view)
 
 import Browser.Navigation as Nav
-import Data.Recipe exposing (Recipe, createRecipe, recipeSaved, saveRecipe)
+import Data.Recipe exposing (Recipe, findRecipeById, newRecipe, receiveRecipe, recipeSaved, saveRecipe)
 import Element
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Process
 import Route exposing (..)
 import Selectize
+import Task
 import UI
 
 
 type alias Model =
     { navKey : Nav.Key
     , recipe : Recipe
+    , loading : Bool
     , saving : Bool
+    , isNew : Bool
     , saveError : Maybe String
     , newIngredientSelection : Maybe String
     , newIngredientMenu : Selectize.State String
@@ -21,20 +25,32 @@ type alias Model =
 
 
 type Msg
-    = SaveRecipe
+    = FetchRecipe String
+    | RecipeRecieved Recipe
+    | SaveRecipe
     | RecipeSaved (Maybe String)
     | NewIngredientMenuMsg (Selectize.Msg String)
     | SelectNewIngredient (Maybe String)
     | UpdateName String
 
 
-init : Nav.Key -> ( Model, Cmd Msg )
-init navKey =
+init : Nav.Key -> Maybe String -> ( Model, Cmd Msg )
+init navKey maybeId =
     let
+        ( isNew, cmd ) =
+            case maybeId of
+                Nothing ->
+                    ( True, Cmd.none )
+
+                Just id ->
+                    ( False, Task.perform (\_ -> FetchRecipe id) <| Process.sleep 0 )
+
         initialModel =
             { navKey = navKey
             , saving = False
-            , recipe = createRecipe
+            , loading = isNew
+            , isNew = isNew
+            , recipe = newRecipe
             , saveError = Nothing
             , newIngredientSelection = Nothing
             , newIngredientMenu =
@@ -44,12 +60,18 @@ init navKey =
                     (ingredients |> List.map Selectize.entry)
             }
     in
-    ( initialModel, Cmd.none )
+    ( initialModel, cmd )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        FetchRecipe id ->
+            ( model, findRecipeById id )
+
+        RecipeRecieved recipe ->
+            ( { model | recipe = recipe }, Cmd.none )
+
         UpdateName name ->
             let
                 recipe =
@@ -106,7 +128,10 @@ andDo cmd ( model, cmds ) =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    recipeSaved <| \err -> RecipeSaved err
+    Sub.batch
+        [ receiveRecipe <| \recipe -> RecipeRecieved recipe
+        , recipeSaved <| \err -> RecipeSaved err
+        ]
 
 
 view : Model -> Element.Element Msg

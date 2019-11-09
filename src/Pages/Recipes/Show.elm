@@ -3,7 +3,9 @@ module Pages.Recipes.Show exposing (Model, Msg, init, subscriptions, update, vie
 import Data.Recipe exposing (Recipe, findRecipeById, receiveRecipe)
 import Element
 import Process
+import Route
 import Task
+import UI
 
 
 type alias Model =
@@ -44,4 +46,7 @@ view model =
             Element.text "loading"
 
         Just recipe ->
-            Element.text recipe.name
+            Element.row []
+                [ Element.text recipe.name
+                , UI.link "Edit" (Route.EditRecipe model.id)
+                ]

@@ -3,8 +3,8 @@ module Main exposing (main)
 import Browser exposing (Document, UrlRequest)
 import Browser.Navigation as Nav
 import Element
+import Pages.Recipes.Editor as EditRecipe
 import Pages.Recipes.List as ListRecipes
-import Pages.Recipes.New as NewRecipe
 import Pages.Recipes.Show as ShowRecipe
 import Route exposing (Route)
 import UI
@@ -22,14 +22,14 @@ type Msg
     = LinkClicked UrlRequest
     | UrlChanged Url
     | ListRecipesMsg ListRecipes.Msg
-    | NewRecipeMsg NewRecipe.Msg
+    | EditRecipeMsg EditRecipe.Msg
     | ShowRecipeMsg ShowRecipe.Msg
 
 
 type Page
     = NotFoundPage
-    | RecipeList ListRecipes.Model
-    | NewRecipe NewRecipe.Model
+    | ListRecipes ListRecipes.Model
+    | EditRecipe EditRecipe.Model
     | ShowRecipe ShowRecipe.Model
 
 
@@ -77,14 +77,21 @@ initCurrentPage ( model, existingCmds ) =
                         ( pageModel, pageCmds ) =
                             ListRecipes.init
                     in
-                    ( RecipeList pageModel, Cmd.map ListRecipesMsg pageCmds )
+                    ( ListRecipes pageModel, Cmd.map ListRecipesMsg pageCmds )
 
                 Route.NewRecipe ->
                     let
                         ( pageModel, pageCmds ) =
-                            NewRecipe.init model.navKey
+                            EditRecipe.init model.navKey Nothing
                     in
-                    ( NewRecipe pageModel, Cmd.map NewRecipeMsg pageCmds )
+                    ( EditRecipe pageModel, Cmd.map EditRecipeMsg pageCmds )
+
+                Route.EditRecipe recipeId ->
+                    let
+                        ( pageModel, pageCmds ) =
+                            EditRecipe.init model.navKey (Just recipeId)
+                    in
+                    ( EditRecipe pageModel, Cmd.map EditRecipeMsg pageCmds )
     in
     ( { model | page = currentPage }
     , Cmd.batch [ existingCmds, mappedPageCmds ]
@@ -104,14 +111,14 @@ currentView model =
         NotFoundPage ->
             notFoundView
 
-        RecipeList recipeListModel ->
+        ListRecipes recipeListModel ->
             ListRecipes.view recipeListModel |> Element.map ListRecipesMsg
 
         ShowRecipe showRecipeModel ->
             ShowRecipe.view showRecipeModel |> Element.map ShowRecipeMsg
 
-        NewRecipe newRecipeModel ->
-            NewRecipe.view newRecipeModel |> Element.map NewRecipeMsg
+        EditRecipe editRecipeModel ->
+            EditRecipe.view editRecipeModel |> Element.map EditRecipeMsg
 
 
 notFoundView : Element.Element msg
@@ -137,12 +144,12 @@ update msg model =
             in
             ( { model | route = newRoute }, Cmd.none ) |> initCurrentPage
 
-        ( ListRecipesMsg subMsg, RecipeList pageModel ) ->
+        ( ListRecipesMsg subMsg, ListRecipes pageModel ) ->
             let
                 ( updatedPageModel, updatedCmd ) =
                     ListRecipes.update subMsg pageModel
             in
-            ( { model | page = RecipeList updatedPageModel }
+            ( { model | page = ListRecipes updatedPageModel }
             , Cmd.map ListRecipesMsg updatedCmd
             )
 
@@ -155,12 +162,12 @@ update msg model =
             , Cmd.map ShowRecipeMsg updatedCmd
             )
 
-        ( NewRecipeMsg subMsg, NewRecipe pageModel ) ->
+        ( EditRecipeMsg subMsg, EditRecipe pageModel ) ->
             let
                 ( updatedPageModel, updatedCmd ) =
-                    NewRecipe.update subMsg pageModel
+                    EditRecipe.update subMsg pageModel
             in
-            ( { model | page = NewRecipe updatedPageModel }, Cmd.map NewRecipeMsg updatedCmd )
+            ( { model | page = EditRecipe updatedPageModel }, Cmd.map EditRecipeMsg updatedCmd )
 
         ( _, _ ) ->
             ( model, Cmd.none )
@@ -169,14 +176,14 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.page of
-        RecipeList recipeListModel ->
+        ListRecipes recipeListModel ->
             ListRecipes.subscriptions recipeListModel |> Sub.map ListRecipesMsg
 
         ShowRecipe recipeShowModel ->
             ShowRecipe.subscriptions recipeShowModel |> Sub.map ShowRecipeMsg
 
-        NewRecipe newRecipeModel ->
-            NewRecipe.subscriptions newRecipeModel |> Sub.map NewRecipeMsg
+        EditRecipe newRecipeModel ->
+            EditRecipe.subscriptions newRecipeModel |> Sub.map EditRecipeMsg
 
         _ ->
             Sub.none

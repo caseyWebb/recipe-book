@@ -1,4 +1,4 @@
-module UI exposing (TextInputOptions, autocompleteInput, button, header, render, textInput)
+module UI exposing (TextInputOptions, autocompleteInput, button, header, link, render, textInput)
 
 import Element exposing (Element, el, text)
 import Element.Border as Border
@@ -6,6 +6,7 @@ import Element.Font as Font
 import Element.Input as Input
 import Html
 import Html.Attributes
+import Route
 import Selectize
 
 
@@ -30,6 +31,11 @@ header t =
         ]
     <|
         text t
+
+
+link : String -> Route.Route -> Element msg
+link label route =
+    Element.link [] { label = Element.text label, url = Route.toString route }
 
 
 type alias ButtonOptions msg =

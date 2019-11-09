@@ -1,4 +1,4 @@
-module Route exposing (Route(..), parseUrl, pushUrl)
+module Route exposing (Route(..), parseUrl, pushUrl, toString)
 
 import Browser.Navigation as Nav
 import Url exposing (Url)
@@ -10,6 +10,7 @@ type Route
     | Recipes
     | Recipe String
     | NewRecipe
+    | EditRecipe String
 
 
 parseUrl : Url -> Route
@@ -29,16 +30,17 @@ matchRoute =
         , map Recipes (s "recipes")
         , map NewRecipe (s "recipes" </> s "new")
         , map Recipe (s "recipes" </> string)
+        , map EditRecipe (s "recipes" </> string </> s "edit")
         ]
 
 
 pushUrl : Route -> Nav.Key -> Cmd msg
 pushUrl route navKey =
-    routeToString route |> Nav.pushUrl navKey
+    toString route |> Nav.pushUrl navKey
 
 
-routeToString : Route -> String
-routeToString route =
+toString : Route -> String
+toString route =
     case route of
         NotFound ->
             "/not-found"
@@ -50,4 +52,7 @@ routeToString route =
             "/recipes"
 
         Recipe id ->
-            "/recipe/" ++ id
+            "/recipes/" ++ id
+
+        EditRecipe id ->
+            "/recipes/" ++ id ++ "/edit"
