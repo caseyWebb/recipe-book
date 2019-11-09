@@ -3,6 +3,8 @@ port module Data.Recipe exposing
     , RecipeList
     , createRecipe
     , fetchRecipes
+    , findRecipeById
+    , receiveRecipe
     , receiveRecipes
     , recipeSaved
     , saveRecipe
@@ -22,21 +24,39 @@ type alias RecipeList =
     }
 
 
-port fetchRecipes : () -> Cmd msg
-
-
-port receiveRecipes : (RecipeList -> msg) -> Sub msg
-
-
-port saveRecipe : Recipe -> Cmd msg
-
-
-port recipeSaved : (Maybe String -> msg) -> Sub msg
-
-
 createRecipe : Recipe
 createRecipe =
     { id = Nothing
     , rev = Nothing
     , name = ""
     }
+
+
+
+---
+
+
+port fetchRecipes : () -> Cmd msg
+
+
+port receiveRecipes : (RecipeList -> msg) -> Sub msg
+
+
+
+---
+
+
+port findRecipeById : String -> Cmd msg
+
+
+port receiveRecipe : (Recipe -> msg) -> Sub msg
+
+
+
+---
+
+
+port saveRecipe : Recipe -> Cmd msg
+
+
+port recipeSaved : (Maybe String -> msg) -> Sub msg

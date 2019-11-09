@@ -8,7 +8,7 @@ import Url.Parser exposing (..)
 type Route
     = NotFound
     | Recipes
-      -- | Recipe String
+    | Recipe String
     | NewRecipe
 
 
@@ -27,9 +27,8 @@ matchRoute =
     oneOf
         [ map Recipes top
         , map Recipes (s "recipes")
-
-        -- , map Recipe (s "recipes" </> string)
         , map NewRecipe (s "recipes" </> s "new")
+        , map Recipe (s "recipes" </> string)
         ]
 
 
@@ -44,8 +43,11 @@ routeToString route =
         NotFound ->
             "/not-found"
 
+        NewRecipe ->
+            "/recipes/new"
+
         Recipes ->
             "/recipes"
 
-        NewRecipe ->
-            "/recipes/new"
+        Recipe id ->
+            "/recipe/" ++ id

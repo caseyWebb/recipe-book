@@ -5,6 +5,7 @@ import Browser.Navigation as Nav
 import Element
 import Pages.Recipes.List as ListRecipes
 import Pages.Recipes.New as NewRecipe
+import Pages.Recipes.Show as ShowRecipe
 import Route exposing (Route)
 import UI
 import Url exposing (Url)
@@ -22,12 +23,14 @@ type Msg
     | UrlChanged Url
     | ListRecipesMsg ListRecipes.Msg
     | NewRecipeMsg NewRecipe.Msg
+    | ShowRecipeMsg ShowRecipe.Msg
 
 
 type Page
     = NotFoundPage
     | RecipeList ListRecipes.Model
     | NewRecipe NewRecipe.Model
+    | ShowRecipe ShowRecipe.Model
 
 
 main : Program () Model Msg
@@ -61,6 +64,13 @@ initCurrentPage ( model, existingCmds ) =
             case model.route of
                 Route.NotFound ->
                     ( NotFoundPage, Cmd.none )
+
+                Route.Recipe recipeId ->
+                    let
+                        ( pageModel, pageCmds ) =
+                            ShowRecipe.init recipeId
+                    in
+                    ( ShowRecipe pageModel, Cmd.map ShowRecipeMsg pageCmds )
 
                 Route.Recipes ->
                     let
@@ -96,6 +106,9 @@ currentView model =
 
         RecipeList recipeListModel ->
             ListRecipes.view recipeListModel |> Element.map ListRecipesMsg
+
+        ShowRecipe showRecipeModel ->
+            ShowRecipe.view showRecipeModel |> Element.map ShowRecipeMsg
 
         NewRecipe newRecipeModel ->
             NewRecipe.view newRecipeModel |> Element.map NewRecipeMsg
@@ -133,6 +146,15 @@ update msg model =
             , Cmd.map ListRecipesMsg updatedCmd
             )
 
+        ( ShowRecipeMsg subMsg, ShowRecipe pageModel ) ->
+            let
+                ( updatedPageModel, updatedCmd ) =
+                    ShowRecipe.update subMsg pageModel
+            in
+            ( { model | page = ShowRecipe updatedPageModel }
+            , Cmd.map ShowRecipeMsg updatedCmd
+            )
+
         ( NewRecipeMsg subMsg, NewRecipe pageModel ) ->
             let
                 ( updatedPageModel, updatedCmd ) =
@@ -149,6 +171,9 @@ subscriptions model =
     case model.page of
         RecipeList recipeListModel ->
             ListRecipes.subscriptions recipeListModel |> Sub.map ListRecipesMsg
+
+        ShowRecipe recipeShowModel ->
+            ShowRecipe.subscriptions recipeShowModel |> Sub.map ShowRecipeMsg
 
         NewRecipe newRecipeModel ->
             NewRecipe.subscriptions newRecipeModel |> Sub.map NewRecipeMsg

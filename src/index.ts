@@ -10,6 +10,11 @@ const app = Elm.Main.init({
 
 callAndRespond(app.ports.fetchRecipes, app.ports.receiveRecipes, recipe.list)
 callAndRespond(app.ports.saveRecipe, app.ports.recipeSaved, recipe.save)
+callAndRespond(
+  app.ports.findRecipeById,
+  app.ports.receiveRecipe,
+  recipe.fetchById
+)
 
 function callAndRespond<TIn, TOut>(
   call: { subscribe(cb: (arg: TIn) => unknown): void },
