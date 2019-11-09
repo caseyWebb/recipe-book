@@ -2,26 +2,32 @@ module Pages.Recipes.List exposing (Model, Msg, init, subscriptions, update, vie
 
 import Data.Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
 import Element
+import Process
+import Task
 
 
 type alias Model =
-    RecipeList
+    Maybe RecipeList
 
 
 type Msg
-    = RecipesRecieved RecipeList
+    = Ready ()
+    | RecipesRecieved RecipeList
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { count = 0, recipes = [] }, fetchRecipes () )
+    ( Nothing, Task.perform Ready <| Process.sleep 0 )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg _ =
+update msg model =
     case msg of
+        Ready _ ->
+            ( model, fetchRecipes () )
+
         RecipesRecieved response ->
-            ( response, Cmd.none )
+            ( Just response, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -31,10 +37,15 @@ subscriptions _ =
 
 view : Model -> Element.Element Msg
 view model =
-    Element.column []
-        [ Element.link [] { url = "/recipes/new", label = Element.text "New Recipe" }
-        , viewRecipes model
-        ]
+    case model of
+        Nothing ->
+            Element.text "Loading"
+
+        Just data ->
+            Element.column []
+                [ Element.link [] { url = "/recipes/new", label = Element.text "New Recipe" }
+                , viewRecipes data
+                ]
 
 
 viewRecipes : RecipeList -> Element.Element Msg
