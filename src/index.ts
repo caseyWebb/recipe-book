@@ -1,14 +1,30 @@
-import ko from 'knockout'
-import 'knockout-punches'
+import { Elm } from './Main'
+import * as db from './db'
 
-import 'bindings'
-import 'routing'
-import * as appComponent from 'components/app'
-import { overlayLoader } from 'lib'
+import './Styles/Main.css'
 
-// eslint-disable-next-line
-;(ko as any).punches.enableAll()
+const app = Elm.Main.init({
+  flags: null,
+  node: document.body
+})
 
-ko.components.register('app', appComponent)
+callAndRespond(app.ports.fetchRecipes, app.ports.receiveRecipes, db.listRecipes)
+callAndRespond(app.ports.saveRecipe, app.ports.recipeSaved, db.saveRecipe)
+callAndRespond(
+  app.ports.findRecipeById,
+  app.ports.receiveRecipe,
+  db.fetchRecipeById
+)
+callAndRespond(
+  app.ports.fetchIngredients,
+  app.ports.receiveIngredients,
+  db.listIngredients
+)
 
-ko.applyBindings({ showOverlayLoader: overlayLoader.isVisible }, document.body)
+function callAndRespond<TIn, TOut>(
+  call: { subscribe(cb: (arg: TIn) => unknown): void },
+  respond: { send(data: TOut): void },
+  resolve: (arg: TIn) => Promise<TOut>
+): void {
+  call.subscribe(async (data) => respond.send(await resolve(data)))
+}
