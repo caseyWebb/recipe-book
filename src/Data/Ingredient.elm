@@ -5,6 +5,11 @@ type alias Ingredient =
     { name : String }
 
 
+newIngredient : String -> Ingredient
+newIngredient name =
+    { name = name }
+
+
 
 ---
 

@@ -1,7 +1,7 @@
 module Pages.Recipes.Editor exposing (Model, Msg, init, subscriptions, update, view)
 
 import Browser.Navigation as Nav
-import Data.Ingredient exposing (Ingredient, fetchIngredients, receiveIngredients)
+import Data.Ingredient exposing (Ingredient, fetchIngredients, newIngredient, receiveIngredients)
 import Data.Recipe exposing (Recipe, findRecipeById, newRecipe, receiveRecipe, recipeSaved, saveRecipe)
 import Element
 import Html exposing (..)
@@ -9,9 +9,9 @@ import Html.Attributes exposing (..)
 import Process
 import Regex
 import Route exposing (..)
-import Selectize
 import Task
 import UI
+import UI.Autocomplete as Autocomplete
 
 
 type alias Model =
@@ -21,8 +21,10 @@ type alias Model =
     , saving : Bool
     , isNew : Bool
     , saveError : Maybe String
-    , newIngredientSelection : Maybe String
-    , newIngredientMenu : Selectize.State String
+    , newIngredientAutocomplete :
+        { state : Autocomplete.State
+        , data : List String
+        }
     }
 
 
@@ -33,9 +35,9 @@ type Msg
     | ReceiveIngredients (List String)
     | SaveRecipe
     | RecipeSaved (Maybe String)
-    | NewIngredientMenuMsg (Selectize.Msg String)
-    | SelectNewIngredient (Maybe String)
+    | SelectNewIngredient String
     | UpdateName String
+    | NewIngredientAutocompleteMsg Autocomplete.Msg
 
 
 init : Nav.Key -> Maybe String -> ( Model, Cmd Msg )
@@ -54,6 +56,7 @@ init navKey maybeId =
                     in
                     ( False, Cmd.batch initCmds )
 
+        initialModel : Model
         initialModel =
             { navKey = navKey
             , saving = False
@@ -61,8 +64,7 @@ init navKey maybeId =
             , isNew = isNew
             , recipe = newRecipe
             , saveError = Nothing
-            , newIngredientSelection = Nothing
-            , newIngredientMenu = createIngredientMenu []
+            , newIngredientAutocomplete = { state = Autocomplete.init, data = [] }
             }
     in
     ( initialModel, cmd )
@@ -89,10 +91,16 @@ update msg model =
 
         ReceiveIngredients ingredients ->
             let
-                updatedIngredientMenu =
-                    createIngredientMenu ingredients
+                newIngredientAutocomplete =
+                    model.newIngredientAutocomplete
+
+                updatedNewIngredientAutocomplete =
+                    { newIngredientAutocomplete | data = ingredients }
+
+                updatedModel =
+                    { model | newIngredientAutocomplete = updatedNewIngredientAutocomplete }
             in
-            ( { model | newIngredientMenu = updatedIngredientMenu }, Cmd.none )
+            ( updatedModel, Cmd.none )
 
         UpdateName name ->
             let
@@ -111,30 +119,36 @@ update msg model =
             in
             ( { model | recipe = updatedRecipe }, Cmd.none )
 
-        NewIngredientMenuMsg selectizeMsg ->
+        NewIngredientAutocompleteMsg autocompleteMsg ->
             let
-                ( newMenu, menuCmd, maybeMsg ) =
-                    Selectize.update SelectNewIngredient
-                        model.newIngredientSelection
-                        model.newIngredientMenu
-                        selectizeMsg
+                ( newState, maybeMsg ) =
+                    Autocomplete.update (newIngredientAutocompleteOptions model) autocompleteMsg
+
+                currentNewIngredientAutocomplete =
+                    model.newIngredientAutocomplete
+
+                updatedNewIngredientAutocomplete =
+                    { currentNewIngredientAutocomplete | state = newState }
 
                 newModel =
-                    { model | newIngredientMenu = newMenu }
-
-                cmd =
-                    menuCmd |> Cmd.map NewIngredientMenuMsg
+                    { model | newIngredientAutocomplete = updatedNewIngredientAutocomplete }
             in
             case maybeMsg of
                 Just nextMsg ->
                     update nextMsg newModel
-                        |> andDo cmd
 
                 Nothing ->
-                    ( newModel, cmd )
+                    ( newModel, Cmd.none )
 
         SelectNewIngredient ingredient ->
-            ( { model | newIngredientSelection = ingredient }, Cmd.none )
+            let
+                recipe =
+                    model.recipe
+
+                updatedRecipe =
+                    { recipe | ingredients = newIngredient ingredient :: recipe.ingredients }
+            in
+            ( { model | recipe = updatedRecipe }, Cmd.none )
 
         SaveRecipe ->
             ( { model | saving = True }, saveRecipe model.recipe )
@@ -185,12 +199,7 @@ recipeForm model =
                 }
 
         newIngredientInput =
-            UI.autocompleteInput
-                { placeholder = "Add Ingredient"
-                , selection = model.newIngredientSelection
-                , menu = model.newIngredientMenu
-                , msg = NewIngredientMenuMsg
-                }
+            Autocomplete.view (newIngredientAutocompleteOptions model)
 
         saveButton =
             UI.button { onPress = Just SaveRecipe, label = "Save Recipe" }
@@ -211,6 +220,16 @@ recipeForm model =
         ]
 
 
+newIngredientAutocompleteOptions : Model -> Autocomplete.Options Msg
+newIngredientAutocompleteOptions model =
+    { placeholder = "Add Ingredient"
+    , state = model.newIngredientAutocomplete.state
+    , msg = \msg -> NewIngredientAutocompleteMsg msg
+    , data = model.newIngredientAutocomplete.data
+    , onSelect = \ingredient -> SelectNewIngredient ingredient
+    }
+
+
 slugifyRe : Regex.Regex
 slugifyRe =
     Regex.fromString "[^a-zA-Z0-9]+"
@@ -220,11 +239,3 @@ slugifyRe =
 slugify : String -> String
 slugify =
     String.toLower >> Regex.replace slugifyRe (\_ -> "-")
-
-
-createIngredientMenu : List String -> Selectize.State String
-createIngredientMenu ingredients =
-    Selectize.closed
-        "ingredient-menu"
-        identity
-        (ingredients |> List.map Selectize.entry)
