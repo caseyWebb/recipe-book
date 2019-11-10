@@ -1,4 +1,4 @@
-module UI.Autocomplete exposing (Msg, Options, State, init, update, view)
+module UI.Autocomplete exposing (Msg, Options, State, init, subscriptions, update, view)
 
 import Element
 import Html
@@ -55,12 +55,17 @@ update options msg =
     let
         state =
             options.state
+
+        data =
+            options.data
+                |> List.map String.toLower
+                |> List.filter (String.contains options.state.query)
     in
     case msg of
         MenuMsg menuMsg ->
             let
                 ( newMenuState, maybeMsg ) =
-                    Menu.update (updateConfig options) menuMsg 10 options.state.menu options.data
+                    Menu.update (updateConfig options) menuMsg 10 options.state.menu data
             in
             ( { state | menu = newMenuState }, maybeMsg )
 
@@ -86,6 +91,11 @@ updateConfig options =
         , onMouseClick = \id -> Just <| options.onSelect id
         , separateSelections = False
         }
+
+
+subscriptions : Options msg -> Sub msg
+subscriptions options =
+    Menu.subscription |> Sub.map MenuMsg |> Sub.map options.msg
 
 
 viewConfig : Menu.ViewConfig String

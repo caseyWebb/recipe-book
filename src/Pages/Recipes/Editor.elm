@@ -162,11 +162,12 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
+subscriptions model =
     Sub.batch
         [ receiveRecipe <| \recipe -> RecipeRecieved recipe
         , receiveIngredients <| \ingredients -> ReceiveIngredients ingredients
         , recipeSaved <| \err -> RecipeSaved err
+        , Autocomplete.subscriptions (newIngredientAutocompleteOptions model)
         ]
 
 
