@@ -4,10 +4,11 @@ import Element
 import Html
 import Html.Attributes
 import Menu
+import UI
 
 
 type alias Options msg =
-    { placeholder : String
+    { placeholder : Maybe String
     , state : State
     , msg : Msg -> msg
     , data : List String
@@ -16,28 +17,55 @@ type alias Options msg =
 
 
 type alias State =
-    Menu.State
+    { query : String
+    , menu : Menu.State
+    }
 
 
-type alias Msg =
-    Menu.Msg
+type Msg
+    = MenuMsg Menu.Msg
+    | UpdateQuery String
 
 
-init : Menu.State
+init : State
 init =
-    Menu.empty
+    { query = ""
+    , menu = Menu.empty
+    }
 
 
 view : Options msg -> Element.Element msg
 view options =
-    Menu.view viewConfig 10 options.state options.data
-        |> Html.map options.msg
-        |> Element.html
+    Element.column []
+        [ UI.textInput
+            { onChange = \s -> options.msg (UpdateQuery s)
+            , text = options.state.query
+            , placeholder = options.placeholder
+            , label = Nothing
+            }
+        , Menu.view viewConfig 10 options.state.menu options.data
+            |> Html.map MenuMsg
+            |> Html.map options.msg
+            |> Element.html
+        ]
 
 
-update : Options msg -> Menu.Msg -> ( Menu.State, Maybe msg )
+update : Options msg -> Msg -> ( State, Maybe msg )
 update options msg =
-    Menu.update (updateConfig options) msg 10 options.state options.data
+    let
+        state =
+            options.state
+    in
+    case msg of
+        MenuMsg menuMsg ->
+            let
+                ( newMenuState, maybeMsg ) =
+                    Menu.update (updateConfig options) menuMsg 10 options.state.menu options.data
+            in
+            ( { state | menu = newMenuState }, maybeMsg )
+
+        UpdateQuery newQuery ->
+            ( { state | query = newQuery }, Nothing )
 
 
 updateConfig : Options msg -> Menu.UpdateConfig msg String

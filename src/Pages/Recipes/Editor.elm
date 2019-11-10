@@ -62,7 +62,7 @@ init navKey maybeId =
             , isNew = isNew
             , recipe = newRecipe
             , saveError = Nothing
-            , newIngredientAutocomplete = { state = Autocomplete.init, data = [] }
+            , newIngredientAutocomplete = { state = Autocomplete.init, data = [ "Garlic", "Olive Oil", "Spaghetti", "Canned Tomatoes" ] }
             }
     in
     ( initialModel, cmd )
@@ -71,7 +71,8 @@ init navKey maybeId =
 initMsgs : String -> List Msg
 initMsgs id =
     [ FetchRecipe id
-    , FetchIngredients
+
+    -- , FetchIngredients
     ]
 
 
@@ -186,7 +187,7 @@ recipeForm model =
                 { onChange = \s -> UpdateName s
                 , text = model.recipe.name
                 , placeholder = Nothing
-                , label = "Title"
+                , label = Just "Title"
                 }
 
         newIngredientInput =
@@ -213,7 +214,7 @@ recipeForm model =
 
 newIngredientAutocompleteOptions : Model -> Autocomplete.Options Msg
 newIngredientAutocompleteOptions model =
-    { placeholder = "Add Ingredient"
+    { placeholder = Just "Add Ingredient"
     , state = model.newIngredientAutocomplete.state
     , msg = \msg -> NewIngredientAutocompleteMsg msg
     , data = model.newIngredientAutocomplete.data

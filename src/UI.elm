@@ -53,24 +53,37 @@ button opts =
 type alias TextInputOptions msg =
     { onChange : String -> msg
     , text : String
-    , placeholder : Maybe (Input.Placeholder msg)
-    , label : String
+    , placeholder : Maybe String
+    , label : Maybe String
     }
 
 
 textInput : TextInputOptions msg -> Element msg
 textInput opts =
+    let
+        placeholder =
+            Maybe.map (\p -> Input.placeholder [] (Element.text p)) opts.placeholder
+    in
     Input.text
         [ Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
         , Element.spacing 10
         ]
         { onChange = opts.onChange
         , text = opts.text
-        , placeholder = opts.placeholder
+        , placeholder = placeholder
         , label = inputLabel opts.label
         }
 
 
-inputLabel : String -> Input.Label msg
-inputLabel text =
-    Input.labelLeft [ Element.alignBottom ] (Element.text text)
+inputLabel : Maybe String -> Input.Label msg
+inputLabel maybeText =
+    let
+        ( attrs, text ) =
+            case maybeText of
+                Nothing ->
+                    ( [ Element.width (Element.px 0), Element.height (Element.px 0) ], "" )
+
+                Just t ->
+                    ( [ Element.alignBottom ], t )
+    in
+    Input.labelLeft attrs (Element.text text)
