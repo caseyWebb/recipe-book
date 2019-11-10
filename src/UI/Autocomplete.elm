@@ -31,6 +31,8 @@ type Msg
     | InputFocused
     | InputBlurred
     | UpdateQuery String
+    | OptionSelected String
+    | CreateNewOption
 
 
 init : State
@@ -98,22 +100,22 @@ update options msg =
     let
         state =
             options.state
-
-        menuUpdateConfig =
-            updateConfig options
     in
     case msg of
         MenuMsg menuMsg ->
             let
                 ( newMenuState, maybeMsg ) =
-                    Menu.update menuUpdateConfig menuMsg 10 options.state.menu options.data
+                    Menu.update updateConfig menuMsg 10 options.state.menu options.data
+
+                mappedMsg =
+                    Maybe.map options.msg maybeMsg
             in
-            ( { state | menu = newMenuState }, maybeMsg )
+            ( { state | menu = newMenuState }, mappedMsg )
 
         InputFocused ->
             let
                 newMenuState =
-                    Menu.resetToFirstItem menuUpdateConfig options.data 10 options.state.menu
+                    Menu.resetToFirstItem updateConfig options.data 10 options.state.menu
             in
             ( { state | inputFocused = True, menu = newMenuState }, Nothing )
 
@@ -121,17 +123,44 @@ update options msg =
             ( { state | inputFocused = False }, Nothing )
 
         UpdateQuery newQuery ->
-            ( { state | query = newQuery }, Nothing )
+            let
+                newMenuState =
+                    Menu.resetToFirstItem updateConfig options.data 10 options.state.menu
+            in
+            ( { state | query = newQuery, menu = newMenuState }, Nothing )
+
+        CreateNewOption ->
+            let
+                newMenuState =
+                    Menu.resetToFirstItem updateConfig options.data 10 options.state.menu
+
+                updateSelectionMsg =
+                    Just <| options.onSelect options.state.query
+            in
+            ( { state | menu = newMenuState, query = "" }, updateSelectionMsg )
+
+        OptionSelected selection ->
+            let
+                newMenuState =
+                    Menu.resetToFirstItem updateConfig options.data 10 options.state.menu
+
+                updateSelectionMsg =
+                    Just <| options.onSelect selection
+            in
+            ( { state | menu = newMenuState, query = "" }, updateSelectionMsg )
 
 
-updateConfig : Options msg -> Menu.UpdateConfig msg String
-updateConfig options =
+updateConfig : Menu.UpdateConfig Msg String
+updateConfig =
     Menu.updateConfig
         { toId = identity
         , onKeyDown =
             \code maybeId ->
-                if code == 13 then
-                    Maybe.map options.onSelect maybeId
+                if code == 9 then
+                    Maybe.map OptionSelected maybeId
+
+                else if code == 13 then
+                    Just CreateNewOption
 
                 else
                     Nothing
@@ -139,7 +168,7 @@ updateConfig options =
         , onTooHigh = Nothing
         , onMouseEnter = \_ -> Nothing
         , onMouseLeave = \_ -> Nothing
-        , onMouseClick = \id -> Just <| options.onSelect id
+        , onMouseClick = \id -> Just <| OptionSelected id
         , separateSelections = False
         }
 
