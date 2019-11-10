@@ -1,6 +1,8 @@
 module UI.Autocomplete exposing (Msg, Options, State, init, subscriptions, update, view)
 
 import Element
+import Element.Background as Background
+import Element.Border as Border
 import Html
 import Html.Attributes
 import Menu
@@ -42,21 +44,38 @@ view options =
 
         data =
             options.data |> List.filter (\s -> String.toLower s |> String.contains query)
+
+        dropdownMenu =
+            Element.el
+                [ Element.width Element.fill
+                , Border.solid
+                , Border.color <| Element.rgba 0 0 0 0.15
+                , Border.width 1
+                , Border.rounded 2
+                , Background.color <| Element.rgb 1 1 1
+                , Border.shadow
+                    { offset = ( 0, 0 )
+                    , size = 3
+                    , blur = 10
+                    , color = Element.rgba 0 0 0 0.175
+                    }
+                , Element.fill
+                    |> Element.minimum 50
+                    |> Element.maximum 300
+                    |> Element.height
+                ]
+                (Menu.view viewConfig 10 options.state.menu data
+                    |> Html.map MenuMsg
+                    |> Html.map options.msg
+                    |> Element.html
+                )
     in
-    Element.column []
-        [ UI.textInput [ Element.htmlAttribute <| Html.Attributes.class "selectize-input" ]
-            { onChange = \s -> options.msg (UpdateQuery s)
-            , text = options.state.query
-            , placeholder = options.placeholder
-            , label = Nothing
-            }
-        , Element.el [ Element.htmlAttribute <| Html.Attributes.class "selectize-menu" ]
-            (Menu.view viewConfig 10 options.state.menu data
-                |> Html.map MenuMsg
-                |> Html.map options.msg
-                |> Element.html
-            )
-        ]
+    UI.textInput [ Element.below dropdownMenu ]
+        { onChange = \s -> options.msg (UpdateQuery s)
+        , text = options.state.query
+        , placeholder = options.placeholder
+        , label = Nothing
+        }
 
 
 update : Options msg -> Msg -> ( State, Maybe msg )
@@ -104,23 +123,36 @@ subscriptions options =
 
 viewConfig : Menu.ViewConfig String
 viewConfig =
+    let
+        inlineStyles : List ( String, String, Bool ) -> List (Html.Attribute Never)
+        inlineStyles styles =
+            styles
+                |> List.filter (\( _, _, use ) -> use)
+                |> List.map (\( rule, value, _ ) -> Html.Attributes.style rule value)
+    in
     Menu.viewConfig
         { toId = identity
         , ul =
-            []
+            inlineStyles
+                [ ( "list-style", "none", True )
+                , ( "padding", "0", True )
+                , ( "margin", "0", True )
+                , ( "overflow-y", "auto", True )
+                ]
         , li =
             \mouseFocused keyboardFocused text ->
                 { attributes =
-                    [ Html.Attributes.classList
-                        [ ( "selected", mouseFocused || keyboardFocused )
-                        , ( "mouse"
-                          , mouseFocused
-                          )
-                        , ( "key"
-                          , keyboardFocused
-                          )
+                    inlineStyles
+                        [ ( "display", "block", True )
+                        , ( "padding", "9px 8px", True )
+                        , ( "cursor", "pointer", True )
+                        , ( "font-size", "16px", True )
+                        , ( "line-height", "24px", True )
+                        , ( "color", "#555", True )
+                        , ( "background-color", "#fafafa", mouseFocused )
+                        , ( "background-color", "#f5fafd", keyboardFocused )
+                        , ( "color", "495c68", mouseFocused || keyboardFocused )
                         ]
-                    ]
                 , children =
                     [ Html.text text ]
                 }
