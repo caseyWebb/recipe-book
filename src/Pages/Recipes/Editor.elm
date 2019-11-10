@@ -191,6 +191,11 @@ recipeForm model =
                 , label = Just "Title"
                 }
 
+        ingredientList =
+            model.recipe.ingredients
+                |> List.map (\i -> Element.el [] (Element.text i.name))
+                |> Element.column []
+
         newIngredientInput =
             Autocomplete.view (newIngredientAutocompleteOptions model)
 
@@ -207,6 +212,7 @@ recipeForm model =
     in
     Element.column []
         [ titleInput
+        , ingredientList
         , newIngredientInput
         , saveButton
         , errMessage
