@@ -6,6 +6,7 @@ import Element.Border as Border
 import Html
 import Html.Attributes
 import Html.Events
+import Json.Decode as Decode
 import Menu
 import UI
 
@@ -33,6 +34,7 @@ type Msg
     | UpdateQuery String
     | OptionSelected String
     | CreateNewOption
+    | NoOp
 
 
 init : State
@@ -46,11 +48,8 @@ init =
 view : Options msg -> Element.Element msg
 view options =
     let
-        query =
-            String.toLower options.state.query
-
         data =
-            options.data |> List.filter (\s -> String.toLower s |> String.contains query)
+            getFilteredData options
 
         dropdownMenu =
             if options.state.inputFocused && not (List.isEmpty data) then
@@ -82,11 +81,24 @@ view options =
 
         wrapHandler handler =
             handler |> Element.htmlAttribute
+
+        tabEnterDecoderHelper code =
+            if code == 9 || code == 13 then
+                Decode.succeed (options.msg NoOp)
+
+            else
+                Decode.fail "not handling that key"
+
+        tabEnterDecoder =
+            Html.Events.keyCode
+                |> Decode.andThen tabEnterDecoderHelper
+                |> Decode.map (\msg -> ( msg, True ))
     in
     UI.textInput
         [ Element.below dropdownMenu
         , wrapHandler <| Html.Events.onFocus (options.msg InputFocused)
         , wrapHandler <| Html.Events.onBlur (options.msg InputBlurred)
+        , wrapHandler <| Html.Events.preventDefaultOn "keydown" tabEnterDecoder
         ]
         { onChange = \s -> options.msg (UpdateQuery s)
         , text = options.state.query
@@ -98,56 +110,54 @@ view options =
 update : Options msg -> Msg -> ( State, Maybe msg )
 update options msg =
     let
-        state =
+        filteredData =
+            getFilteredData options
+
+        resetMenuState =
+            Menu.resetToFirstItem updateConfig filteredData 10 options.state.menu
+
+        currentState =
             options.state
+
+        updatedState =
+            { currentState | menu = resetMenuState }
     in
     case msg of
         MenuMsg menuMsg ->
             let
                 ( newMenuState, maybeMsg ) =
-                    Menu.update updateConfig menuMsg 10 options.state.menu options.data
+                    Menu.update updateConfig menuMsg 10 options.state.menu filteredData
 
                 mappedMsg =
                     Maybe.map options.msg maybeMsg
             in
-            ( { state | menu = newMenuState }, mappedMsg )
+            ( { updatedState | menu = newMenuState }, mappedMsg )
 
         InputFocused ->
-            let
-                newMenuState =
-                    Menu.resetToFirstItem updateConfig options.data 10 options.state.menu
-            in
-            ( { state | inputFocused = True, menu = newMenuState }, Nothing )
+            ( { updatedState | inputFocused = True }, Nothing )
 
         InputBlurred ->
-            ( { state | inputFocused = False }, Nothing )
+            ( { updatedState | inputFocused = False }, Nothing )
 
         UpdateQuery newQuery ->
-            let
-                newMenuState =
-                    Menu.resetToFirstItem updateConfig options.data 10 options.state.menu
-            in
-            ( { state | query = newQuery, menu = newMenuState }, Nothing )
+            ( { updatedState | query = newQuery }, Nothing )
 
         CreateNewOption ->
             let
-                newMenuState =
-                    Menu.resetToFirstItem updateConfig options.data 10 options.state.menu
-
                 updateSelectionMsg =
                     Just <| options.onSelect options.state.query
             in
-            ( { state | menu = newMenuState, query = "" }, updateSelectionMsg )
+            ( { updatedState | query = "" }, updateSelectionMsg )
 
         OptionSelected selection ->
             let
-                newMenuState =
-                    Menu.resetToFirstItem updateConfig options.data 10 options.state.menu
-
                 updateSelectionMsg =
                     Just <| options.onSelect selection
             in
-            ( { state | menu = newMenuState, query = "" }, updateSelectionMsg )
+            ( { updatedState | query = "" }, updateSelectionMsg )
+
+        NoOp ->
+            ( options.state, Nothing )
 
 
 updateConfig : Menu.UpdateConfig Msg String
@@ -214,3 +224,15 @@ viewConfig =
                     [ Html.text text ]
                 }
         }
+
+
+getFilteredData : Options msg -> List String
+getFilteredData options =
+    let
+        query =
+            String.toLower options.state.query
+
+        searchCaseInsensitive =
+            \s -> String.toLower s |> String.contains query
+    in
+    List.filter searchCaseInsensitive options.data
