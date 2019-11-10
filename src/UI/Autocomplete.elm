@@ -5,6 +5,7 @@ import Element.Background as Background
 import Element.Border as Border
 import Html
 import Html.Attributes
+import Html.Events
 import Menu
 import UI
 
@@ -20,18 +21,22 @@ type alias Options msg =
 
 type alias State =
     { query : String
+    , inputFocused : Bool
     , menu : Menu.State
     }
 
 
 type Msg
     = MenuMsg Menu.Msg
+    | InputFocused
+    | InputBlurred
     | UpdateQuery String
 
 
 init : State
 init =
     { query = ""
+    , inputFocused = False
     , menu = Menu.empty
     }
 
@@ -46,31 +51,48 @@ view options =
             options.data |> List.filter (\s -> String.toLower s |> String.contains query)
 
         dropdownMenu =
-            Element.el
-                [ Element.width Element.fill
-                , Border.solid
-                , Border.color <| Element.rgba 0 0 0 0.15
-                , Border.width 1
-                , Border.rounded 2
-                , Background.color <| Element.rgb 1 1 1
-                , Border.shadow
-                    { offset = ( 0, 0 )
-                    , size = 3
-                    , blur = 10
-                    , color = Element.rgba 0 0 0 0.175
-                    }
-                , Element.fill
-                    |> Element.minimum 50
-                    |> Element.maximum 300
-                    |> Element.height
-                ]
-                (Menu.view viewConfig 10 options.state.menu data
-                    |> Html.map MenuMsg
-                    |> Html.map options.msg
-                    |> Element.html
-                )
+            if options.state.inputFocused then
+                Element.el
+                    [ Element.width Element.fill
+                    , Border.solid
+                    , Border.color <| Element.rgba 0 0 0 0.15
+                    , Border.width 1
+                    , Border.rounded 2
+                    , Background.color <| Element.rgb 1 1 1
+                    , Border.shadow
+                        { offset = ( 0, 0 )
+                        , size = 3
+                        , blur = 10
+                        , color = Element.rgba 0 0 0 0.175
+                        }
+                    , Element.fill
+                        |> Element.minimum 50
+                        |> Element.maximum 300
+                        |> Element.height
+                    ]
+                    (Menu.view viewConfig 10 options.state.menu data
+                        |> Html.map MenuMsg
+                        |> Html.map options.msg
+                        |> Element.html
+                    )
+
+            else
+                Element.none
+
+        wrapHandler handler =
+            handler |> Element.htmlAttribute
+
+        onFocus =
+            wrapHandler <| Html.Events.onFocus (options.msg InputFocused)
+
+        onBlur =
+            wrapHandler <| Html.Events.onBlur (options.msg InputBlurred)
     in
-    UI.textInput [ Element.below dropdownMenu ]
+    UI.textInput
+        [ Element.below dropdownMenu
+        , onFocus
+        , onBlur
+        ]
         { onChange = \s -> options.msg (UpdateQuery s)
         , text = options.state.query
         , placeholder = options.placeholder
@@ -91,6 +113,12 @@ update options msg =
                     Menu.update (updateConfig options) menuMsg 10 options.state.menu options.data
             in
             ( { state | menu = newMenuState }, maybeMsg )
+
+        InputFocused ->
+            ( { state | inputFocused = True }, Nothing )
+
+        InputBlurred ->
+            ( { state | inputFocused = False }, Nothing )
 
         UpdateQuery newQuery ->
             ( { state | query = newQuery }, Nothing )
