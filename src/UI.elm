@@ -58,16 +58,20 @@ type alias TextInputOptions msg =
     }
 
 
-textInput : TextInputOptions msg -> Element msg
-textInput opts =
+textInput : List (Element.Attribute msg) -> TextInputOptions msg -> Element msg
+textInput attrs opts =
     let
         placeholder =
             Maybe.map (\p -> Input.placeholder [] (Element.text p)) opts.placeholder
     in
     Input.text
-        [ Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
-        , Element.spacing 10
-        ]
+        (List.concat
+            [ [ Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
+              , Element.spacing 10
+              ]
+            , attrs
+            ]
+        )
         { onChange = opts.onChange
         , text = opts.text
         , placeholder = placeholder

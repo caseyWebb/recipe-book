@@ -184,7 +184,7 @@ recipeForm : Model -> Element.Element Msg
 recipeForm model =
     let
         titleInput =
-            UI.textInput
+            UI.textInput []
                 { onChange = \s -> UpdateName s
                 , text = model.recipe.name
                 , placeholder = Nothing

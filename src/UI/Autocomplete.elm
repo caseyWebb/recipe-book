@@ -44,16 +44,18 @@ view options =
             options.data |> List.filter (\s -> String.toLower s |> String.contains query)
     in
     Element.column []
-        [ UI.textInput
+        [ UI.textInput [ Element.htmlAttribute <| Html.Attributes.class "selectize-input" ]
             { onChange = \s -> options.msg (UpdateQuery s)
             , text = options.state.query
             , placeholder = options.placeholder
             , label = Nothing
             }
-        , Menu.view viewConfig 10 options.state.menu data
-            |> Html.map MenuMsg
-            |> Html.map options.msg
-            |> Element.html
+        , Element.el [ Element.htmlAttribute <| Html.Attributes.class "selectize-menu" ]
+            (Menu.view viewConfig 10 options.state.menu data
+                |> Html.map MenuMsg
+                |> Html.map options.msg
+                |> Element.html
+            )
         ]
 
 
