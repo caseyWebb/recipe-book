@@ -1,14 +1,12 @@
 module Pages.Recipes.Editor exposing (Model, Msg, init, subscriptions, update, view)
 
 import Browser.Navigation as Nav
-import Data.Ingredient exposing (Ingredient, fetchIngredients, newIngredient, receiveIngredients)
+import Data.Ingredient exposing (fetchIngredients, newIngredient, receiveIngredients)
 import Data.Recipe exposing (Recipe, findRecipeById, newRecipe, receiveRecipe, recipeSaved, saveRecipe)
 import Element
-import Html exposing (..)
-import Html.Attributes exposing (..)
 import Process
 import Regex
-import Route exposing (..)
+import Route
 import Task
 import UI
 import UI.Autocomplete as Autocomplete
@@ -160,13 +158,6 @@ update msg model =
 
                 Nothing ->
                     ( { model | saving = False }, Route.pushUrl Route.Recipes model.navKey )
-
-
-andDo : Cmd msg -> ( model, Cmd msg ) -> ( model, Cmd msg )
-andDo cmd ( model, cmds ) =
-    ( model
-    , Cmd.batch [ cmd, cmds ]
-    )
 
 
 subscriptions : Model -> Sub Msg
