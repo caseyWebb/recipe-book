@@ -12,8 +12,7 @@ port module Data.Recipe exposing
 
 
 type alias Recipe =
-    { id : Maybe String
-    , rev : Maybe String
+    { slug : String
     , name : String
     }
 
@@ -26,8 +25,7 @@ type alias RecipeList =
 
 newRecipe : Recipe
 newRecipe =
-    { id = Nothing
-    , rev = Nothing
+    { slug = ""
     , name = ""
     }
 

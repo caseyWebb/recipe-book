@@ -1,5 +1,5 @@
 import { Elm } from './Main'
-import * as recipe from './Data/Recipe'
+import * as db from './db'
 
 import './Styles/Main.css'
 
@@ -8,12 +8,12 @@ const app = Elm.Main.init({
   node: document.body
 })
 
-callAndRespond(app.ports.fetchRecipes, app.ports.receiveRecipes, recipe.list)
-callAndRespond(app.ports.saveRecipe, app.ports.recipeSaved, recipe.save)
+callAndRespond(app.ports.fetchRecipes, app.ports.receiveRecipes, db.listRecipes)
+callAndRespond(app.ports.saveRecipe, app.ports.recipeSaved, db.saveRecipe)
 callAndRespond(
   app.ports.findRecipeById,
   app.ports.receiveRecipe,
-  recipe.fetchById
+  db.fetchRecipeById
 )
 
 function callAndRespond<TIn, TOut>(

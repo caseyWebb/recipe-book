@@ -6,6 +6,7 @@ import Element
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Process
+import Regex
 import Route exposing (..)
 import Selectize
 import Task
@@ -77,8 +78,15 @@ update msg model =
                 recipe =
                     model.recipe
 
+                updatedSlug =
+                    if model.isNew then
+                        slugify name
+
+                    else
+                        model.recipe.slug
+
                 updatedRecipe =
-                    { recipe | name = name }
+                    { recipe | name = name, slug = updatedSlug }
             in
             ( { model | recipe = updatedRecipe }, Cmd.none )
 
@@ -164,12 +172,32 @@ recipeForm model =
 
         saveButton =
             UI.button { onPress = Just SaveRecipe, label = "Save Recipe" }
+
+        errMessage =
+            case model.saveError of
+                Nothing ->
+                    Element.text ""
+
+                Just err ->
+                    Element.text err
     in
     Element.column []
         [ titleInput
         , newIngredientInput
         , saveButton
+        , errMessage
         ]
+
+
+slugifyRe : Regex.Regex
+slugifyRe =
+    Regex.fromString "[^a-zA-Z0-9]+"
+        |> Maybe.withDefault Regex.never
+
+
+slugify : String -> String
+slugify =
+    String.toLower >> Regex.replace slugifyRe (\_ -> "-")
 
 
 ingredients : List String

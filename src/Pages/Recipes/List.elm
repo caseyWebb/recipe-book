@@ -3,6 +3,7 @@ module Pages.Recipes.List exposing (Model, Msg, init, subscriptions, update, vie
 import Data.Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
 import Element
 import Process
+import Route
 import Task
 
 
@@ -62,11 +63,6 @@ viewRecipe : Recipe -> Element.Element Msg
 viewRecipe recipe =
     let
         recipePath =
-            case recipe.id of
-                Just id ->
-                    "/recipes/" ++ id
-
-                Nothing ->
-                    "#"
+            Route.toString (Route.Recipe recipe.slug)
     in
     Element.link [] { url = recipePath, label = Element.text recipe.name }
