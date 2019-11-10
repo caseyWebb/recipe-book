@@ -1,6 +1,7 @@
 module Pages.Recipes.Editor exposing (Model, Msg, init, subscriptions, update, view)
 
 import Browser.Navigation as Nav
+import Data.Ingredient exposing (Ingredient, fetchIngredients, receiveIngredients)
 import Data.Recipe exposing (Recipe, findRecipeById, newRecipe, receiveRecipe, recipeSaved, saveRecipe)
 import Element
 import Html exposing (..)
@@ -28,6 +29,8 @@ type alias Model =
 type Msg
     = FetchRecipe String
     | RecipeRecieved Recipe
+    | FetchIngredients
+    | ReceiveIngredients (List String)
     | SaveRecipe
     | RecipeSaved (Maybe String)
     | NewIngredientMenuMsg (Selectize.Msg String)
@@ -44,7 +47,12 @@ init navKey maybeId =
                     ( True, Cmd.none )
 
                 Just id ->
-                    ( False, Task.perform (\_ -> FetchRecipe id) <| Process.sleep 0 )
+                    let
+                        initCmds =
+                            initMsgs id
+                                |> List.map (\msg -> Task.perform (\_ -> msg) <| Process.sleep 0)
+                    in
+                    ( False, Cmd.batch initCmds )
 
         initialModel =
             { navKey = navKey
@@ -54,14 +62,17 @@ init navKey maybeId =
             , recipe = newRecipe
             , saveError = Nothing
             , newIngredientSelection = Nothing
-            , newIngredientMenu =
-                Selectize.closed
-                    "ingredient-menu"
-                    identity
-                    (ingredients |> List.map Selectize.entry)
+            , newIngredientMenu = createIngredientMenu []
             }
     in
     ( initialModel, cmd )
+
+
+initMsgs : String -> List Msg
+initMsgs id =
+    [ FetchRecipe id
+    , FetchIngredients
+    ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -72,6 +83,16 @@ update msg model =
 
         RecipeRecieved recipe ->
             ( { model | recipe = recipe }, Cmd.none )
+
+        FetchIngredients ->
+            ( model, fetchIngredients () )
+
+        ReceiveIngredients ingredients ->
+            let
+                updatedIngredientMenu =
+                    createIngredientMenu ingredients
+            in
+            ( { model | newIngredientMenu = updatedIngredientMenu }, Cmd.none )
 
         UpdateName name ->
             let
@@ -138,6 +159,7 @@ subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
         [ receiveRecipe <| \recipe -> RecipeRecieved recipe
+        , receiveIngredients <| \ingredients -> ReceiveIngredients ingredients
         , recipeSaved <| \err -> RecipeSaved err
         ]
 
@@ -200,6 +222,9 @@ slugify =
     String.toLower >> Regex.replace slugifyRe (\_ -> "-")
 
 
-ingredients : List String
-ingredients =
-    [ "Garlic", "Onion", "Canned Tomatoes", "Olive Oil", "Spaghetti" ]
+createIngredientMenu : List String -> Selectize.State String
+createIngredientMenu ingredients =
+    Selectize.closed
+        "ingredient-menu"
+        identity
+        (ingredients |> List.map Selectize.entry)

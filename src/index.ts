@@ -15,6 +15,11 @@ callAndRespond(
   app.ports.receiveRecipe,
   db.fetchRecipeById
 )
+callAndRespond(
+  app.ports.fetchIngredients,
+  app.ports.receiveIngredients,
+  db.listIngredients
+)
 
 function callAndRespond<TIn, TOut>(
   call: { subscribe(cb: (arg: TIn) => unknown): void },

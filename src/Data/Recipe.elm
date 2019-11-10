@@ -1,14 +1,6 @@
-port module Data.Recipe exposing
-    ( Recipe
-    , RecipeList
-    , fetchRecipes
-    , findRecipeById
-    , newRecipe
-    , receiveRecipe
-    , receiveRecipes
-    , recipeSaved
-    , saveRecipe
-    )
+port module Data.Recipe exposing (..)
+
+import Data.Ingredient exposing (Ingredient)
 
 
 type alias Recipe =
@@ -16,10 +8,6 @@ type alias Recipe =
     , name : String
     , ingredients : List Ingredient
     }
-
-
-type alias Ingredient =
-    { name : String }
 
 
 type alias RecipeList =
