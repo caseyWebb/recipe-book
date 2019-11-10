@@ -36,6 +36,13 @@ init =
 
 view : Options msg -> Element.Element msg
 view options =
+    let
+        query =
+            String.toLower options.state.query
+
+        data =
+            options.data |> List.filter (\s -> String.toLower s |> String.contains query)
+    in
     Element.column []
         [ UI.textInput
             { onChange = \s -> options.msg (UpdateQuery s)
@@ -43,7 +50,7 @@ view options =
             , placeholder = options.placeholder
             , label = Nothing
             }
-        , Menu.view viewConfig 10 options.state.menu options.data
+        , Menu.view viewConfig 10 options.state.menu data
             |> Html.map MenuMsg
             |> Html.map options.msg
             |> Element.html
@@ -65,7 +72,7 @@ update options msg =
         MenuMsg menuMsg ->
             let
                 ( newMenuState, maybeMsg ) =
-                    Menu.update (updateConfig options) menuMsg 10 options.state.menu data
+                    Menu.update (updateConfig options) menuMsg 10 options.state.menu options.data
             in
             ( { state | menu = newMenuState }, maybeMsg )
 
