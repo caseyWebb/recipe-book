@@ -62,11 +62,6 @@ update options msg =
     let
         state =
             options.state
-
-        data =
-            options.data
-                |> List.map String.toLower
-                |> List.filter (String.contains options.state.query)
     in
     case msg of
         MenuMsg menuMsg ->
