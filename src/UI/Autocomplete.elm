@@ -51,7 +51,7 @@ view options =
             options.data |> List.filter (\s -> String.toLower s |> String.contains query)
 
         dropdownMenu =
-            if options.state.inputFocused then
+            if options.state.inputFocused && not (List.isEmpty data) then
                 Element.el
                     [ Element.width Element.fill
                     , Border.solid
@@ -66,7 +66,6 @@ view options =
                         , color = Element.rgba 0 0 0 0.175
                         }
                     , Element.fill
-                        |> Element.minimum 50
                         |> Element.maximum 300
                         |> Element.height
                     ]
@@ -99,17 +98,24 @@ update options msg =
     let
         state =
             options.state
+
+        menuUpdateConfig =
+            updateConfig options
     in
     case msg of
         MenuMsg menuMsg ->
             let
                 ( newMenuState, maybeMsg ) =
-                    Menu.update (updateConfig options) menuMsg 10 options.state.menu options.data
+                    Menu.update menuUpdateConfig menuMsg 10 options.state.menu options.data
             in
             ( { state | menu = newMenuState }, maybeMsg )
 
         InputFocused ->
-            ( { state | inputFocused = True }, Nothing )
+            let
+                newMenuState =
+                    Menu.resetToFirstItem menuUpdateConfig options.data 10 options.state.menu
+            in
+            ( { state | inputFocused = True, menu = newMenuState }, Nothing )
 
         InputBlurred ->
             ( { state | inputFocused = False }, Nothing )

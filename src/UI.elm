@@ -69,6 +69,9 @@ textInput attrs opts =
         (List.concat
             [ [ Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
               , Element.spacing 10
+              , Element.focused
+                    [ Border.shadow { offset = ( 0, 0 ), size = 0, blur = 0, color = Element.rgb 0 0 0 }
+                    ]
               ]
             , attrs
             ]
