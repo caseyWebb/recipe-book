@@ -7,6 +7,7 @@ import Element
 import Process
 import Regex
 import Route
+import Set
 import Task
 import UI
 import UI.Autocomplete as Autocomplete
@@ -224,7 +225,9 @@ newIngredientAutocompleteOptions model =
     { placeholder = Just "Add Ingredient"
     , state = model.newIngredientAutocomplete.state
     , msg = \msg -> NewIngredientAutocompleteMsg msg
-    , data = model.newIngredientAutocomplete.data
+    , data =
+        Set.diff (Set.fromList model.newIngredientAutocomplete.data) (Set.fromList (List.map .name model.recipe.ingredients))
+            |> Set.toList
     , onSelect = \ingredient -> SelectNewIngredient ingredient
     }
 
