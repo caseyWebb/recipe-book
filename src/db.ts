@@ -85,13 +85,14 @@ export async function fetchRecipeById(id: string): Promise<string | Recipe> {
   const recipesStore = await tx.objectStore('recipes')
   const ingredientsStore = await tx.objectStore('ingredients')
   const recipe = await recipesStore.get(id)
-  await tx.done
   if (!recipe) return 'Recipe not found'
+  const ingredients = (await Promise.all(
+    recipe.ingredients.map((i) => ingredientsStore.get(i))
+  )).filter((i) => typeof i !== 'undefined') as Ingredient[]
+  await tx.done
   return {
     ...recipe,
-    ingredients: (await Promise.all(
-      recipe.ingredients.map((i) => ingredientsStore.get(i))
-    )).filter((i) => typeof i !== 'undefined') as Ingredient[]
+    ingredients
   }
 }
 

@@ -1,5 +1,6 @@
 module Pages.Recipes.Show exposing (Model, Msg, init, subscriptions, update, view)
 
+import Data.Ingredient exposing (Ingredient)
 import Data.Recipe exposing (Recipe, findRecipeById, receiveRecipe)
 import Element
 import Process
@@ -46,7 +47,18 @@ view model =
             Element.text "loading"
 
         Just recipe ->
-            Element.row []
-                [ Element.text recipe.name
-                , UI.link "Edit" (Route.EditRecipe model.id)
+            Element.column []
+                [ Element.row []
+                    [ Element.text recipe.name
+                    , UI.link "Edit" (Route.EditRecipe model.id)
+                    ]
+                , viewIngredients recipe.ingredients
                 ]
+
+
+viewIngredients : List Ingredient -> Element.Element Msg
+viewIngredients ingredients =
+    Element.column []
+        (ingredients
+            |> List.map (\i -> Element.el [] <| Element.text i.name)
+        )
