@@ -81,17 +81,11 @@ view options =
 
         wrapHandler handler =
             handler |> Element.htmlAttribute
-
-        onFocus =
-            wrapHandler <| Html.Events.onFocus (options.msg InputFocused)
-
-        onBlur =
-            wrapHandler <| Html.Events.onBlur (options.msg InputBlurred)
     in
     UI.textInput
         [ Element.below dropdownMenu
-        , onFocus
-        , onBlur
+        , wrapHandler <| Html.Events.onFocus (options.msg InputFocused)
+        , wrapHandler <| Html.Events.onBlur (options.msg InputBlurred)
         ]
         { onChange = \s -> options.msg (UpdateQuery s)
         , text = options.state.query
