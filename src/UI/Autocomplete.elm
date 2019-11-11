@@ -88,7 +88,11 @@ update options model msg =
                     getFilteredData model.data updatedQuery
 
                 updatedMenuModel =
-                    Menu.reset updateConfig model.menu
+                    if String.isEmpty updatedQuery then
+                        Menu.reset updateConfig model.menu
+
+                    else
+                        Menu.resetToFirstItem updateConfig updatedFilteredData 10 model.menu
             in
             ( { model
                 | query = updatedQuery
@@ -118,13 +122,10 @@ updateConfig =
         , onKeyDown =
             \code maybeId ->
                 case code of
-                    -- TAB
-                    9 ->
-                        Maybe.map OptionSelected maybeId
-
-                    -- ENTER
                     13 ->
-                        Just CreateNewOption
+                        Maybe.map OptionSelected maybeId
+                            |> Maybe.withDefault CreateNewOption
+                            |> Just
 
                     -- ESC
                     27 ->
@@ -187,7 +188,7 @@ view options model =
             handler |> Element.htmlAttribute
 
         tabEnterDecoderHelper code =
-            if code == 9 || code == 13 then
+            if code == 13 then
                 Decode.succeed (options.msg NoOp)
 
             else
