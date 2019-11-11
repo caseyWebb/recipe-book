@@ -153,7 +153,6 @@ update msg model =
                     newIngredient ingredient :: recipe.ingredients
 
                 updatedAvailableIngredients =
-                    -- [ "foo", "bar", "baz" ]
                     availableIngredients
                         model.allIngredients
                         updatedRecipeIngredients

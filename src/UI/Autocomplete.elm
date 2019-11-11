@@ -29,7 +29,7 @@ type alias Model =
 
 type Msg
     = MenuMsg Menu.Msg
-    | InputFocusStateChange Bool
+    | FocusStateChanged Bool
     | UpdateQuery String
     | OptionSelected String
     | CreateNewOption
@@ -60,7 +60,7 @@ update options model msg =
             in
             ( { model | menu = newMenuModel }, mappedMsg )
 
-        InputFocusStateChange focused ->
+        FocusStateChanged focused ->
             ( { model | inputFocused = focused }, Nothing )
 
         UpdateQuery updatedQuery ->
@@ -98,14 +98,21 @@ updateConfig =
         { toId = identity
         , onKeyDown =
             \code maybeId ->
-                if code == 9 then
-                    Maybe.map OptionSelected maybeId
+                case code of
+                    -- TAB
+                    9 ->
+                        Maybe.map OptionSelected maybeId
 
-                else if code == 13 then
-                    Just CreateNewOption
+                    -- ENTER
+                    13 ->
+                        Just CreateNewOption
 
-                else
-                    Nothing
+                    -- ESC
+                    27 ->
+                        Just (FocusStateChanged False)
+
+                    _ ->
+                        Just (FocusStateChanged True)
         , onTooLow = Nothing
         , onTooHigh = Nothing
         , onMouseEnter = \_ -> Nothing
@@ -177,8 +184,8 @@ view options model =
     in
     UI.textInput
         [ Element.below dropdownMenu
-        , wrapHandler <| Html.Events.onFocus (options.msg (InputFocusStateChange True))
-        , wrapHandler <| Html.Events.onBlur (options.msg (InputFocusStateChange False))
+        , wrapHandler <| Html.Events.onFocus (options.msg (FocusStateChanged True))
+        , wrapHandler <| Html.Events.onBlur (options.msg (FocusStateChanged False))
         , wrapHandler <| Html.Events.preventDefaultOn "keydown" tabEnterDecoder
         ]
         { onChange = \s -> options.msg (UpdateQuery s)
