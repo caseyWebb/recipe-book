@@ -20,10 +20,7 @@ type alias Model =
     , saving : Bool
     , isNew : Bool
     , saveError : Maybe String
-    , newIngredientAutocomplete :
-        { state : Autocomplete.State
-        , data : List String
-        }
+    , newIngredientAutocomplete : Autocomplete.Model
     }
 
 
@@ -63,7 +60,7 @@ init navKey maybeId =
             , isNew = isNew
             , recipe = newRecipe
             , saveError = Nothing
-            , newIngredientAutocomplete = { state = Autocomplete.init, data = [ "Garlic", "Olive Oil", "Spaghetti", "Canned Tomatoes" ] }
+            , newIngredientAutocomplete = Autocomplete.init [ "Garlic", "Tomatoes", "Olive Oil" ]
             }
     in
     ( initialModel, cmd )
@@ -72,8 +69,7 @@ init navKey maybeId =
 initMsgs : String -> List Msg
 initMsgs id =
     [ FetchRecipe id
-
-    -- , FetchIngredients
+    , FetchIngredients
     ]
 
 
@@ -97,10 +93,15 @@ update msg model =
                 updatedNewIngredientAutocomplete =
                     { newIngredientAutocomplete | data = ingredients }
 
+                nextMsg =
+                    Autocomplete.reset
+                        (newIngredientAutocompleteOptions model)
+                        updatedNewIngredientAutocomplete
+
                 updatedModel =
                     { model | newIngredientAutocomplete = updatedNewIngredientAutocomplete }
             in
-            ( updatedModel, Cmd.none )
+            update nextMsg updatedModel
 
         UpdateName name ->
             let
@@ -121,17 +122,17 @@ update msg model =
 
         NewIngredientAutocompleteMsg autocompleteMsg ->
             let
-                ( newState, maybeMsg ) =
-                    Autocomplete.update (newIngredientAutocompleteOptions model) autocompleteMsg
-
-                currentNewIngredientAutocomplete =
+                autocomplete =
                     model.newIngredientAutocomplete
 
-                updatedNewIngredientAutocomplete =
-                    { currentNewIngredientAutocomplete | state = newState }
+                ( updatedAutocomplete, maybeMsg ) =
+                    Autocomplete.update
+                        (newIngredientAutocompleteOptions model)
+                        { autocomplete | data = availableIngredients model }
+                        autocompleteMsg
 
                 newModel =
-                    { model | newIngredientAutocomplete = updatedNewIngredientAutocomplete }
+                    { model | newIngredientAutocomplete = updatedAutocomplete }
             in
             case maybeMsg of
                 Just nextMsg ->
@@ -146,9 +147,28 @@ update msg model =
                     model.recipe
 
                 updatedRecipe =
-                    { recipe | ingredients = newIngredient ingredient :: recipe.ingredients }
+                    { recipe
+                        | ingredients = newIngredient ingredient :: recipe.ingredients
+                    }
+
+                autocomplete =
+                    model.newIngredientAutocomplete
+
+                updatedAutocompleteModel =
+                    { autocomplete | data = availableIngredients model }
+
+                newModel =
+                    { model
+                        | recipe = updatedRecipe
+                        , newIngredientAutocomplete = updatedAutocompleteModel
+                    }
+
+                nextMsg =
+                    Autocomplete.reset
+                        (newIngredientAutocompleteOptions model)
+                        updatedAutocompleteModel
             in
-            ( { model | recipe = updatedRecipe }, Cmd.none )
+            update nextMsg newModel
 
         SaveRecipe ->
             ( { model | saving = True }, saveRecipe model.recipe )
@@ -198,7 +218,7 @@ recipeForm model =
                 |> Element.column []
 
         newIngredientInput =
-            Autocomplete.view (newIngredientAutocompleteOptions model)
+            Autocomplete.view (newIngredientAutocompleteOptions model) model.newIngredientAutocomplete
 
         saveButton =
             UI.button { onPress = Just SaveRecipe, label = "Save Recipe" }
@@ -223,11 +243,7 @@ recipeForm model =
 newIngredientAutocompleteOptions : Model -> Autocomplete.Options Msg
 newIngredientAutocompleteOptions model =
     { placeholder = Just "Add Ingredient"
-    , state = model.newIngredientAutocomplete.state
     , msg = \msg -> NewIngredientAutocompleteMsg msg
-    , data =
-        Set.diff (Set.fromList model.newIngredientAutocomplete.data) (Set.fromList (List.map .name model.recipe.ingredients))
-            |> Set.toList
     , onSelect = \ingredient -> SelectNewIngredient ingredient
     }
 
@@ -241,3 +257,11 @@ slugifyRe =
 slugify : String -> String
 slugify =
     String.toLower >> Regex.replace slugifyRe (\_ -> "-")
+
+
+availableIngredients : Model -> List String
+availableIngredients model =
+    Set.diff
+        (Set.fromList model.newIngredientAutocomplete.data)
+        (Set.fromList (List.map .name model.recipe.ingredients))
+        |> Set.toList

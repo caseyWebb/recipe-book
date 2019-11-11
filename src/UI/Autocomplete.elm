@@ -1,4 +1,4 @@
-module UI.Autocomplete exposing (Msg, Options, State, init, subscriptions, update, view)
+module UI.Autocomplete exposing (Model, Msg, Options, init, reset, subscriptions, update, view)
 
 import Element
 import Element.Background as Background
@@ -13,15 +13,14 @@ import UI
 
 type alias Options msg =
     { placeholder : Maybe String
-    , state : State
     , msg : Msg -> msg
-    , data : List String
     , onSelect : String -> msg
     }
 
 
-type alias State =
-    { query : String
+type alias Model =
+    { data : List String
+    , query : String
     , inputFocused : Bool
     , menu : Menu.State
     }
@@ -34,25 +33,27 @@ type Msg
     | UpdateQuery String
     | OptionSelected String
     | CreateNewOption
+    | Reset Menu.State
     | NoOp
 
 
-init : State
-init =
-    { query = ""
+init : List String -> Model
+init data =
+    { data = data
+    , query = ""
     , inputFocused = False
     , menu = Menu.empty
     }
 
 
-view : Options msg -> Element.Element msg
-view options =
+view : Options msg -> Model -> Element.Element msg
+view options model =
     let
         data =
-            getFilteredData options
+            getFilteredData model
 
         dropdownMenu =
-            if options.state.inputFocused && not (List.isEmpty data) then
+            if model.inputFocused && not (List.isEmpty data) then
                 Element.el
                     [ Element.width Element.fill
                     , Border.solid
@@ -70,7 +71,7 @@ view options =
                         |> Element.maximum 300
                         |> Element.height
                     ]
-                    (Menu.view viewConfig 10 options.state.menu data
+                    (Menu.view viewConfig 10 model.menu data
                         |> Html.map MenuMsg
                         |> Html.map options.msg
                         |> Element.html
@@ -101,63 +102,63 @@ view options =
         , wrapHandler <| Html.Events.preventDefaultOn "keydown" tabEnterDecoder
         ]
         { onChange = \s -> options.msg (UpdateQuery s)
-        , text = options.state.query
+        , text = model.query
         , placeholder = options.placeholder
         , label = Nothing
         }
 
 
-update : Options msg -> Msg -> ( State, Maybe msg )
-update options msg =
+update : Options msg -> Model -> Msg -> ( Model, Maybe msg )
+update options model msg =
     let
         filteredData =
-            getFilteredData options
+            getFilteredData model
 
-        resetMenuState =
-            Menu.resetToFirstItem updateConfig filteredData 10 options.state.menu
+        resetMenuModel =
+            Menu.resetToFirstItem updateConfig filteredData 10 model.menu
 
-        currentState =
-            options.state
-
-        updatedState =
-            { currentState | menu = resetMenuState }
+        updatedModel =
+            { model | menu = resetMenuModel }
     in
     case msg of
         MenuMsg menuMsg ->
             let
-                ( newMenuState, maybeMsg ) =
-                    Menu.update updateConfig menuMsg 10 options.state.menu filteredData
+                ( newMenuModel, maybeMsg ) =
+                    Menu.update updateConfig menuMsg 10 model.menu filteredData
 
                 mappedMsg =
                     Maybe.map options.msg maybeMsg
             in
-            ( { updatedState | menu = newMenuState }, mappedMsg )
+            ( { updatedModel | menu = newMenuModel }, mappedMsg )
 
         InputFocused ->
-            ( { updatedState | inputFocused = True }, Nothing )
+            ( { updatedModel | inputFocused = True }, Nothing )
 
         InputBlurred ->
-            ( { updatedState | inputFocused = False }, Nothing )
+            ( { updatedModel | inputFocused = False }, Nothing )
 
         UpdateQuery newQuery ->
-            ( { updatedState | query = newQuery }, Nothing )
+            ( { updatedModel | query = newQuery }, Nothing )
 
         CreateNewOption ->
             let
                 updateSelectionMsg =
-                    Just <| options.onSelect options.state.query
+                    Just <| options.onSelect model.query
             in
-            ( { updatedState | query = "" }, updateSelectionMsg )
+            ( { updatedModel | query = "" }, updateSelectionMsg )
 
         OptionSelected selection ->
             let
                 updateSelectionMsg =
                     Just <| options.onSelect selection
             in
-            ( { updatedState | query = "" }, updateSelectionMsg )
+            ( { updatedModel | query = "" }, updateSelectionMsg )
+
+        Reset updatedMenu ->
+            ( { model | query = "", menu = updatedMenu }, Nothing )
 
         NoOp ->
-            ( options.state, Nothing )
+            ( model, Nothing )
 
 
 updateConfig : Menu.UpdateConfig Msg String
@@ -181,6 +182,15 @@ updateConfig =
         , onMouseClick = \id -> Just <| OptionSelected id
         , separateSelections = False
         }
+
+
+reset : Options msg -> Model -> msg
+reset options model =
+    let
+        filteredData =
+            getFilteredData model
+    in
+    options.msg <| Reset (Menu.resetToFirstItem updateConfig filteredData 10 model.menu)
 
 
 subscriptions : Options msg -> Sub msg
@@ -226,13 +236,13 @@ viewConfig =
         }
 
 
-getFilteredData : Options msg -> List String
-getFilteredData options =
+getFilteredData : Model -> List String
+getFilteredData model =
     let
         query =
-            String.toLower options.state.query
+            String.toLower model.query
 
         searchCaseInsensitive =
             \s -> String.toLower s |> String.contains query
     in
-    List.filter searchCaseInsensitive options.data
+    List.filter searchCaseInsensitive model.data
