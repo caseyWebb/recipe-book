@@ -33,6 +33,7 @@ type Msg
     | SaveRecipe
     | RecipeSaved (Maybe String)
     | SelectNewIngredient String
+    | DeleteIngredient String
     | UpdateName String
     | NewIngredientAutocompleteMsg Autocomplete.Msg
 
@@ -80,6 +81,32 @@ update msg model =
                 (Set.fromList allIngredients)
                 (Set.fromList (List.map .name addedIngredients))
                 |> Set.toList
+
+        updateIngredients updatedRecipeIngredients =
+            let
+                updatedAvailableIngredients =
+                    availableIngredients
+                        model.allIngredients
+                        updatedRecipeIngredients
+
+                updatedModel =
+                    { model
+                        | recipe =
+                            { recipe
+                                | ingredients = updatedRecipeIngredients
+                            }
+                        , newIngredientAutocomplete =
+                            { newIngredientAutocomplete
+                                | data = updatedAvailableIngredients
+                            }
+                    }
+
+                nextMsg =
+                    Autocomplete.reset
+                        newIngredientAutocompleteOptions
+                        updatedModel.newIngredientAutocomplete
+            in
+            update nextMsg updatedModel
 
         recipe =
             model.recipe
@@ -151,30 +178,15 @@ update msg model =
             let
                 updatedRecipeIngredients =
                     newIngredient ingredient :: recipe.ingredients
-
-                updatedAvailableIngredients =
-                    availableIngredients
-                        model.allIngredients
-                        updatedRecipeIngredients
-
-                updatedRecipe =
-                    { recipe | ingredients = updatedRecipeIngredients }
-
-                updatedNewIngredientAutocomplete =
-                    { newIngredientAutocomplete | data = updatedAvailableIngredients }
-
-                updatedModel =
-                    { model
-                        | recipe = updatedRecipe
-                        , newIngredientAutocomplete = updatedNewIngredientAutocomplete
-                    }
-
-                nextMsg =
-                    Autocomplete.reset
-                        newIngredientAutocompleteOptions
-                        updatedNewIngredientAutocomplete
             in
-            update nextMsg updatedModel
+            updateIngredients updatedRecipeIngredients
+
+        DeleteIngredient ingredient ->
+            let
+                updatedRecipeIngredients =
+                    recipe.ingredients |> List.filter (\i -> i.name /= ingredient)
+            in
+            updateIngredients updatedRecipeIngredients
 
         SaveRecipe ->
             ( { model | saving = True }, saveRecipe model.recipe )
@@ -220,7 +232,13 @@ recipeForm model =
 
         ingredientList =
             model.recipe.ingredients
-                |> List.map (\i -> Element.el [] (Element.text i.name))
+                |> List.map
+                    (\i ->
+                        Element.row []
+                            [ Element.text i.name
+                            , UI.button { onPress = Just <| DeleteIngredient i.name, label = "Delete" }
+                            ]
+                    )
                 |> Element.column []
 
         newIngredientInput =
