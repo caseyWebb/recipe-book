@@ -32,10 +32,8 @@ type Msg
     | FocusStateChanged Bool
     | UpdateQuery String
     | OptionSelected String
-    | CreateNewOption
     | Reset Menu.State
     | EnterDropdown
-    | NoOp
 
 
 init : List String -> Model
@@ -102,17 +100,11 @@ update options model msg =
             , Nothing
             )
 
-        CreateNewOption ->
-            ( model, Just <| options.onSelect model.query )
-
         OptionSelected selection ->
             ( model, Just <| options.onSelect selection )
 
         Reset updatedMenu ->
             update options { model | menu = updatedMenu } (UpdateQuery "")
-
-        NoOp ->
-            ( model, Nothing )
 
 
 updateConfig : Menu.UpdateConfig Msg String
@@ -120,19 +112,13 @@ updateConfig =
     Menu.updateConfig
         { toId = identity
         , onKeyDown =
-            \code maybeId ->
+            \code _ ->
                 case code of
-                    13 ->
-                        Maybe.map OptionSelected maybeId
-                            |> Maybe.withDefault CreateNewOption
-                            |> Just
-
-                    -- ESC
                     27 ->
                         Just (FocusStateChanged False)
 
                     _ ->
-                        Just (FocusStateChanged True)
+                        Nothing
         , onTooLow = Just EnterDropdown
         , onTooHigh = Nothing
         , onMouseEnter = \_ -> Nothing
@@ -188,8 +174,24 @@ view options model =
             handler |> Element.htmlAttribute
 
         tabEnterDecoderHelper code =
-            if code == 13 then
-                Decode.succeed (options.msg NoOp)
+            let
+                ( maybeSelection, _ ) =
+                    Menu.current model.menu
+
+                newSelection =
+                    model.query
+            in
+            if code == 9 || code == 13 then
+                case maybeSelection of
+                    Just selection ->
+                        Decode.succeed (options.msg (OptionSelected selection))
+
+                    Nothing ->
+                        if String.isEmpty newSelection then
+                            Decode.fail "not handling that key"
+
+                        else
+                            Decode.succeed (options.msg (OptionSelected newSelection))
 
             else
                 Decode.fail "not handling that key"
