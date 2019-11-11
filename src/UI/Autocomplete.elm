@@ -140,9 +140,10 @@ view : Options msg -> Model -> Element.Element msg
 view options model =
     let
         dropdownMenu =
-            if model.inputFocused && not (List.isEmpty model.filteredData) then
+            if not (List.isEmpty model.filteredData) then
                 Element.el
-                    [ Element.width Element.fill
+                    [ Element.transparent (not model.inputFocused)
+                    , Element.width Element.fill
                     , Border.solid
                     , Border.color <| Element.rgba 0 0 0 0.15
                     , Border.width 1
