@@ -108,7 +108,10 @@ update msg model =
                         updatedNewIngredientAutocomplete
 
                 updatedModel =
-                    { model | newIngredientAutocomplete = updatedNewIngredientAutocomplete }
+                    { model
+                        | allIngredients = ingredients
+                        , newIngredientAutocomplete = updatedNewIngredientAutocomplete
+                    }
             in
             update nextMsg updatedModel
 
@@ -150,11 +153,11 @@ update msg model =
                     newIngredient ingredient :: recipe.ingredients
 
                 updatedAvailableIngredients =
-                    [ "foo", "bar", "baz" ]
+                    -- [ "foo", "bar", "baz" ]
+                    availableIngredients
+                        model.allIngredients
+                        updatedRecipeIngredients
 
-                -- availableIngredients
-                --     model.allIngredients
-                --     updatedRecipeIngredients
                 updatedRecipe =
                     { recipe | ingredients = updatedRecipeIngredients }
 

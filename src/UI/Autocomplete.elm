@@ -29,8 +29,7 @@ type alias Model =
 
 type Msg
     = MenuMsg Menu.Msg
-    | InputFocused
-    | InputBlurred
+    | InputFocusStateChange Bool
     | UpdateQuery String
     | OptionSelected String
     | CreateNewOption
@@ -46,6 +45,88 @@ init data =
     , inputFocused = False
     , menu = Menu.empty
     }
+
+
+update : Options msg -> Model -> Msg -> ( Model, Maybe msg )
+update options model msg =
+    case msg of
+        MenuMsg menuMsg ->
+            let
+                ( newMenuModel, maybeMsg ) =
+                    Menu.update updateConfig menuMsg 10 model.menu model.filteredData
+
+                mappedMsg =
+                    Maybe.map options.msg maybeMsg
+            in
+            ( { model | menu = newMenuModel }, mappedMsg )
+
+        InputFocusStateChange focused ->
+            ( { model | inputFocused = focused }, Nothing )
+
+        UpdateQuery updatedQuery ->
+            let
+                updatedFilteredData =
+                    getFilteredData model.data updatedQuery
+
+                updatedMenuModel =
+                    Menu.resetToFirstItem updateConfig updatedFilteredData 10 model.menu
+            in
+            ( { model
+                | query = updatedQuery
+                , filteredData = updatedFilteredData
+                , menu = updatedMenuModel
+              }
+            , Nothing
+            )
+
+        CreateNewOption ->
+            ( model, Just <| options.onSelect model.query )
+
+        OptionSelected selection ->
+            ( model, Just <| options.onSelect selection )
+
+        Reset updatedMenu ->
+            update options { model | menu = updatedMenu } (UpdateQuery "")
+
+        NoOp ->
+            ( model, Nothing )
+
+
+updateConfig : Menu.UpdateConfig Msg String
+updateConfig =
+    Menu.updateConfig
+        { toId = identity
+        , onKeyDown =
+            \code maybeId ->
+                if code == 9 then
+                    Maybe.map OptionSelected maybeId
+
+                else if code == 13 then
+                    Just CreateNewOption
+
+                else
+                    Nothing
+        , onTooLow = Nothing
+        , onTooHigh = Nothing
+        , onMouseEnter = \_ -> Nothing
+        , onMouseLeave = \_ -> Nothing
+        , onMouseClick = \id -> Just <| OptionSelected id
+        , separateSelections = False
+        }
+
+
+reset : Options msg -> Model -> msg
+reset options model =
+    let
+        filteredData =
+            getFilteredData model.data model.query
+    in
+    options.msg <| Reset (Menu.resetToFirstItem updateConfig filteredData 10 model.menu)
+
+
+subscriptions : Options msg -> Sub msg
+subscriptions options =
+    Menu.subscription |> Sub.map MenuMsg |> Sub.map options.msg
 
 
 view : Options msg -> Model -> Element.Element msg
@@ -96,8 +177,8 @@ view options model =
     in
     UI.textInput
         [ Element.below dropdownMenu
-        , wrapHandler <| Html.Events.onFocus (options.msg InputFocused)
-        , wrapHandler <| Html.Events.onBlur (options.msg InputBlurred)
+        , wrapHandler <| Html.Events.onFocus (options.msg (InputFocusStateChange True))
+        , wrapHandler <| Html.Events.onBlur (options.msg (InputFocusStateChange False))
         , wrapHandler <| Html.Events.preventDefaultOn "keydown" tabEnterDecoder
         ]
         { onChange = \s -> options.msg (UpdateQuery s)
@@ -105,105 +186,6 @@ view options model =
         , placeholder = options.placeholder
         , label = Nothing
         }
-
-
-update : Options msg -> Model -> Msg -> ( Model, Maybe msg )
-update options model msg =
-    case msg of
-        MenuMsg menuMsg ->
-            let
-                ( newMenuModel, maybeMsg ) =
-                    Menu.update updateConfig menuMsg 10 model.menu model.filteredData
-
-                mappedMsg =
-                    Maybe.map options.msg maybeMsg
-            in
-            ( { model | menu = newMenuModel }, mappedMsg )
-
-        InputFocused ->
-            ( { model | inputFocused = True }, Nothing )
-
-        InputBlurred ->
-            ( { model | inputFocused = False }, Nothing )
-
-        UpdateQuery updatedQuery ->
-            let
-                updatedFilteredData =
-                    getFilteredData model.data updatedQuery
-
-                updatedMenuModel =
-                    Menu.resetToFirstItem updateConfig updatedFilteredData 10 model.menu
-            in
-            ( { model
-                | query = updatedQuery
-                , filteredData = updatedFilteredData
-                , menu = updatedMenuModel
-              }
-            , Nothing
-            )
-
-        CreateNewOption ->
-            let
-                updateSelectionMsg =
-                    Just <| options.onSelect model.query
-
-                ( updatedModel, _ ) =
-                    update options model (UpdateQuery "")
-            in
-            ( updatedModel, updateSelectionMsg )
-
-        OptionSelected selection ->
-            let
-                updateSelectionMsg =
-                    Just <| options.onSelect selection
-
-                ( updatedModel, _ ) =
-                    update options model (UpdateQuery "")
-            in
-            ( updatedModel, updateSelectionMsg )
-
-        Reset updatedMenu ->
-            ( { model | query = "", menu = updatedMenu }, Nothing )
-
-        NoOp ->
-            ( model, Nothing )
-
-
-updateConfig : Menu.UpdateConfig Msg String
-updateConfig =
-    Menu.updateConfig
-        { toId = identity
-        , onKeyDown =
-            \code maybeId ->
-                if code == 9 then
-                    Maybe.map OptionSelected maybeId
-
-                else if code == 13 then
-                    Just CreateNewOption
-
-                else
-                    Nothing
-        , onTooLow = Nothing
-        , onTooHigh = Nothing
-        , onMouseEnter = \_ -> Nothing
-        , onMouseLeave = \_ -> Nothing
-        , onMouseClick = \id -> Just <| OptionSelected id
-        , separateSelections = False
-        }
-
-
-reset : Options msg -> Model -> msg
-reset options model =
-    let
-        filteredData =
-            getFilteredData model.data model.query
-    in
-    options.msg <| Reset (Menu.resetToFirstItem updateConfig filteredData 10 model.menu)
-
-
-subscriptions : Options msg -> Sub msg
-subscriptions options =
-    Menu.subscription |> Sub.map MenuMsg |> Sub.map options.msg
 
 
 viewConfig : Menu.ViewConfig String
