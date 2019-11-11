@@ -21,7 +21,6 @@ type alias Model =
     , isNew : Bool
     , saveError : Maybe String
     , allIngredients : List String
-    , availableIngredients : List String
     , newIngredientAutocomplete : Autocomplete.Model
     }
 
@@ -66,7 +65,6 @@ init navKey maybeId =
             , recipe = newRecipe
             , saveError = Nothing
             , allIngredients = []
-            , availableIngredients = []
             , newIngredientAutocomplete = Autocomplete.init []
             }
     in
@@ -106,7 +104,7 @@ update msg model =
 
                 nextMsg =
                     Autocomplete.reset
-                        (newIngredientAutocompleteOptions model)
+                        newIngredientAutocompleteOptions
                         updatedNewIngredientAutocomplete
 
                 updatedModel =
@@ -132,7 +130,7 @@ update msg model =
             let
                 ( updatedAutocomplete, maybeMsg ) =
                     Autocomplete.update
-                        (newIngredientAutocompleteOptions model)
+                        newIngredientAutocompleteOptions
                         newIngredientAutocomplete
                         autocompleteMsg
 
@@ -152,26 +150,27 @@ update msg model =
                     newIngredient ingredient :: recipe.ingredients
 
                 updatedAvailableIngredients =
-                    availableIngredients
-                        model.allIngredients
-                        updatedRecipeIngredients
+                    [ "foo", "bar", "baz" ]
 
+                -- availableIngredients
+                --     model.allIngredients
+                --     updatedRecipeIngredients
                 updatedRecipe =
                     { recipe | ingredients = updatedRecipeIngredients }
 
-                updatedAutocompleteModel =
+                updatedNewIngredientAutocomplete =
                     { newIngredientAutocomplete | data = updatedAvailableIngredients }
 
                 updatedModel =
                     { model
                         | recipe = updatedRecipe
-                        , newIngredientAutocomplete = updatedAutocompleteModel
+                        , newIngredientAutocomplete = updatedNewIngredientAutocomplete
                     }
 
                 nextMsg =
                     Autocomplete.reset
-                        (newIngredientAutocompleteOptions model)
-                        updatedAutocompleteModel
+                        newIngredientAutocompleteOptions
+                        updatedNewIngredientAutocomplete
             in
             update nextMsg updatedModel
 
@@ -188,12 +187,12 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.batch
         [ receiveRecipe <| \recipe -> RecipeRecieved recipe
         , receiveIngredients <| \ingredients -> ReceiveIngredients ingredients
         , recipeSaved <| \err -> RecipeSaved err
-        , Autocomplete.subscriptions (newIngredientAutocompleteOptions model)
+        , Autocomplete.subscriptions newIngredientAutocompleteOptions
         ]
 
 
@@ -223,7 +222,7 @@ recipeForm model =
                 |> Element.column []
 
         newIngredientInput =
-            Autocomplete.view (newIngredientAutocompleteOptions model) model.newIngredientAutocomplete
+            Autocomplete.view newIngredientAutocompleteOptions model.newIngredientAutocomplete
 
         saveButton =
             UI.button { onPress = Just SaveRecipe, label = "Save Recipe" }
@@ -245,8 +244,8 @@ recipeForm model =
         ]
 
 
-newIngredientAutocompleteOptions : Model -> Autocomplete.Options Msg
-newIngredientAutocompleteOptions model =
+newIngredientAutocompleteOptions : Autocomplete.Options Msg
+newIngredientAutocompleteOptions =
     { placeholder = Just "Add Ingredient"
     , msg = \msg -> NewIngredientAutocompleteMsg msg
     , onSelect = \ingredient -> SelectNewIngredient ingredient

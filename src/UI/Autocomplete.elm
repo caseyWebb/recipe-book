@@ -20,6 +20,7 @@ type alias Options msg =
 
 type alias Model =
     { data : List String
+    , filteredData : List String
     , query : String
     , inputFocused : Bool
     , menu : Menu.State
@@ -40,6 +41,7 @@ type Msg
 init : List String -> Model
 init data =
     { data = data
+    , filteredData = data
     , query = ""
     , inputFocused = False
     , menu = Menu.empty
@@ -49,11 +51,8 @@ init data =
 view : Options msg -> Model -> Element.Element msg
 view options model =
     let
-        data =
-            getFilteredData model
-
         dropdownMenu =
-            if model.inputFocused && not (List.isEmpty data) then
+            if model.inputFocused && not (List.isEmpty model.filteredData) then
                 Element.el
                     [ Element.width Element.fill
                     , Border.solid
@@ -71,7 +70,7 @@ view options model =
                         |> Element.maximum 300
                         |> Element.height
                     ]
-                    (Menu.view viewConfig 10 model.menu data
+                    (Menu.view viewConfig 10 model.menu model.filteredData
                         |> Html.map MenuMsg
                         |> Html.map options.msg
                         |> Element.html
@@ -110,49 +109,58 @@ view options model =
 
 update : Options msg -> Model -> Msg -> ( Model, Maybe msg )
 update options model msg =
-    let
-        filteredData =
-            getFilteredData model
-
-        resetMenuModel =
-            Menu.resetToFirstItem updateConfig filteredData 10 model.menu
-
-        updatedModel =
-            { model | menu = resetMenuModel }
-    in
     case msg of
         MenuMsg menuMsg ->
             let
                 ( newMenuModel, maybeMsg ) =
-                    Menu.update updateConfig menuMsg 10 model.menu filteredData
+                    Menu.update updateConfig menuMsg 10 model.menu model.filteredData
 
                 mappedMsg =
                     Maybe.map options.msg maybeMsg
             in
-            ( { updatedModel | menu = newMenuModel }, mappedMsg )
+            ( { model | menu = newMenuModel }, mappedMsg )
 
         InputFocused ->
-            ( { updatedModel | inputFocused = True }, Nothing )
+            ( { model | inputFocused = True }, Nothing )
 
         InputBlurred ->
-            ( { updatedModel | inputFocused = False }, Nothing )
+            ( { model | inputFocused = False }, Nothing )
 
-        UpdateQuery newQuery ->
-            ( { updatedModel | query = newQuery }, Nothing )
+        UpdateQuery updatedQuery ->
+            let
+                updatedFilteredData =
+                    getFilteredData model.data updatedQuery
+
+                updatedMenuModel =
+                    Menu.resetToFirstItem updateConfig updatedFilteredData 10 model.menu
+            in
+            ( { model
+                | query = updatedQuery
+                , filteredData = updatedFilteredData
+                , menu = updatedMenuModel
+              }
+            , Nothing
+            )
 
         CreateNewOption ->
             let
                 updateSelectionMsg =
                     Just <| options.onSelect model.query
+
+                ( updatedModel, _ ) =
+                    update options model (UpdateQuery "")
             in
-            ( { updatedModel | query = "" }, updateSelectionMsg )
+            ( updatedModel, updateSelectionMsg )
 
         OptionSelected selection ->
             let
                 updateSelectionMsg =
                     Just <| options.onSelect selection
+
+                ( updatedModel, _ ) =
+                    update options model (UpdateQuery "")
             in
-            ( { updatedModel | query = "" }, updateSelectionMsg )
+            ( updatedModel, updateSelectionMsg )
 
         Reset updatedMenu ->
             ( { model | query = "", menu = updatedMenu }, Nothing )
@@ -188,7 +196,7 @@ reset : Options msg -> Model -> msg
 reset options model =
     let
         filteredData =
-            getFilteredData model
+            getFilteredData model.data model.query
     in
     options.msg <| Reset (Menu.resetToFirstItem updateConfig filteredData 10 model.menu)
 
@@ -236,13 +244,13 @@ viewConfig =
         }
 
 
-getFilteredData : Model -> List String
-getFilteredData model =
+getFilteredData : List String -> String -> List String
+getFilteredData data query =
     let
-        query =
-            String.toLower model.query
+        lowerQuery =
+            String.toLower query
 
         searchCaseInsensitive =
-            \s -> String.toLower s |> String.contains query
+            \s -> String.toLower s |> String.contains lowerQuery
     in
-    List.filter searchCaseInsensitive model.data
+    List.filter searchCaseInsensitive data
