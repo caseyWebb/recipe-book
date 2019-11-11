@@ -178,23 +178,26 @@ view options model =
                 ( maybeSelection, _ ) =
                     Menu.current model.menu
 
-                newSelection =
-                    model.query
+                noop =
+                    Decode.fail "noop"
+
+                preventDefaultAnd msg =
+                    Decode.succeed <| options.msg msg
             in
             if code == 9 || code == 13 then
                 case maybeSelection of
                     Just selection ->
-                        Decode.succeed (options.msg (OptionSelected selection))
+                        preventDefaultAnd <| OptionSelected selection
 
                     Nothing ->
-                        if String.isEmpty newSelection then
-                            Decode.fail "not handling that key"
+                        if String.isEmpty model.query then
+                            noop
 
                         else
-                            Decode.succeed (options.msg (OptionSelected newSelection))
+                            preventDefaultAnd <| OptionSelected model.query
 
             else
-                Decode.fail "not handling that key"
+                noop
 
         tabEnterDecoder =
             Html.Events.keyCode
