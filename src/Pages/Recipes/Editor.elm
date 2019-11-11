@@ -1,7 +1,7 @@
 module Pages.Recipes.Editor exposing (Model, Msg, init, subscriptions, update, view)
 
 import Browser.Navigation as Nav
-import Data.Ingredient exposing (fetchIngredients, newIngredient, receiveIngredients)
+import Data.Ingredient exposing (Ingredient, fetchIngredients, newIngredient, receiveIngredients)
 import Data.Recipe exposing (Recipe, findRecipeById, newRecipe, receiveRecipe, recipeSaved, saveRecipe)
 import Element
 import Process
@@ -20,6 +20,8 @@ type alias Model =
     , saving : Bool
     , isNew : Bool
     , saveError : Maybe String
+    , allIngredients : List String
+    , availableIngredients : List String
     , newIngredientAutocomplete : Autocomplete.Model
     }
 
@@ -39,18 +41,21 @@ type Msg
 init : Nav.Key -> Maybe String -> ( Model, Cmd Msg )
 init navKey maybeId =
     let
-        ( isNew, cmd ) =
+        ( isNew, fetchRecipeMsg ) =
             case maybeId of
                 Nothing ->
-                    ( True, Cmd.none )
+                    ( True, Nothing )
 
                 Just id ->
-                    let
-                        initCmds =
-                            initMsgs id
-                                |> List.map (\msg -> Task.perform (\_ -> msg) <| Process.sleep 0)
-                    in
-                    ( False, Cmd.batch initCmds )
+                    ( False, Just (FetchRecipe id) )
+
+        fetchIngredientsMsg =
+            Just FetchIngredients
+
+        initCmds =
+            [ fetchRecipeMsg, fetchIngredientsMsg ]
+                |> List.filterMap (Maybe.map (\msg -> Task.perform (\_ -> msg) <| Process.sleep 0))
+                |> Cmd.batch
 
         initialModel : Model
         initialModel =
@@ -60,36 +65,42 @@ init navKey maybeId =
             , isNew = isNew
             , recipe = newRecipe
             , saveError = Nothing
-            , newIngredientAutocomplete = Autocomplete.init [ "Garlic", "Tomatoes", "Olive Oil" ]
+            , allIngredients = []
+            , availableIngredients = []
+            , newIngredientAutocomplete = Autocomplete.init []
             }
     in
-    ( initialModel, cmd )
-
-
-initMsgs : String -> List Msg
-initMsgs id =
-    [ FetchRecipe id
-    , FetchIngredients
-    ]
+    ( initialModel, initCmds )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    let
+        availableIngredients : List String -> List Ingredient -> List String
+        availableIngredients allIngredients addedIngredients =
+            Set.diff
+                (Set.fromList allIngredients)
+                (Set.fromList (List.map .name addedIngredients))
+                |> Set.toList
+
+        recipe =
+            model.recipe
+
+        newIngredientAutocomplete =
+            model.newIngredientAutocomplete
+    in
     case msg of
         FetchRecipe id ->
             ( model, findRecipeById id )
 
-        RecipeRecieved recipe ->
-            ( { model | recipe = recipe }, Cmd.none )
+        RecipeRecieved updatedRecipe ->
+            ( { model | recipe = updatedRecipe }, Cmd.none )
 
         FetchIngredients ->
             ( model, fetchIngredients () )
 
         ReceiveIngredients ingredients ->
             let
-                newIngredientAutocomplete =
-                    model.newIngredientAutocomplete
-
                 updatedNewIngredientAutocomplete =
                     { newIngredientAutocomplete | data = ingredients }
 
@@ -105,9 +116,6 @@ update msg model =
 
         UpdateName name ->
             let
-                recipe =
-                    model.recipe
-
                 updatedSlug =
                     if model.isNew then
                         slugify name
@@ -122,13 +130,10 @@ update msg model =
 
         NewIngredientAutocompleteMsg autocompleteMsg ->
             let
-                autocomplete =
-                    model.newIngredientAutocomplete
-
                 ( updatedAutocomplete, maybeMsg ) =
                     Autocomplete.update
                         (newIngredientAutocompleteOptions model)
-                        { autocomplete | data = availableIngredients model }
+                        newIngredientAutocomplete
                         autocompleteMsg
 
                 newModel =
@@ -143,21 +148,21 @@ update msg model =
 
         SelectNewIngredient ingredient ->
             let
-                recipe =
-                    model.recipe
+                updatedRecipeIngredients =
+                    newIngredient ingredient :: recipe.ingredients
+
+                updatedAvailableIngredients =
+                    availableIngredients
+                        model.allIngredients
+                        updatedRecipeIngredients
 
                 updatedRecipe =
-                    { recipe
-                        | ingredients = newIngredient ingredient :: recipe.ingredients
-                    }
-
-                autocomplete =
-                    model.newIngredientAutocomplete
+                    { recipe | ingredients = updatedRecipeIngredients }
 
                 updatedAutocompleteModel =
-                    { autocomplete | data = availableIngredients model }
+                    { newIngredientAutocomplete | data = updatedAvailableIngredients }
 
-                newModel =
+                updatedModel =
                     { model
                         | recipe = updatedRecipe
                         , newIngredientAutocomplete = updatedAutocompleteModel
@@ -168,7 +173,7 @@ update msg model =
                         (newIngredientAutocompleteOptions model)
                         updatedAutocompleteModel
             in
-            update nextMsg newModel
+            update nextMsg updatedModel
 
         SaveRecipe ->
             ( { model | saving = True }, saveRecipe model.recipe )
@@ -257,11 +262,3 @@ slugifyRe =
 slugify : String -> String
 slugify =
     String.toLower >> Regex.replace slugifyRe (\_ -> "-")
-
-
-availableIngredients : Model -> List String
-availableIngredients model =
-    Set.diff
-        (Set.fromList model.newIngredientAutocomplete.data)
-        (Set.fromList (List.map .name model.recipe.ingredients))
-        |> Set.toList
