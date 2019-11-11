@@ -34,6 +34,7 @@ type Msg
     | OptionSelected String
     | CreateNewOption
     | Reset Menu.State
+    | EnterDropdown
     | NoOp
 
 
@@ -61,7 +62,25 @@ update options model msg =
             ( { model | menu = newMenuModel }, mappedMsg )
 
         FocusStateChanged focused ->
-            ( { model | inputFocused = focused }, Nothing )
+            let
+                updatedMenu =
+                    if focused then
+                        model.menu
+
+                    else
+                        Menu.reset updateConfig model.menu
+            in
+            ( { model | inputFocused = focused, menu = updatedMenu }, Nothing )
+
+        EnterDropdown ->
+            let
+                updatedMenu =
+                    Menu.resetToFirstItem updateConfig model.filteredData 10 model.menu
+
+                updatedModel =
+                    { model | menu = updatedMenu }
+            in
+            ( updatedModel, Nothing )
 
         UpdateQuery updatedQuery ->
             let
@@ -69,7 +88,7 @@ update options model msg =
                     getFilteredData model.data updatedQuery
 
                 updatedMenuModel =
-                    Menu.resetToFirstItem updateConfig updatedFilteredData 10 model.menu
+                    Menu.reset updateConfig model.menu
             in
             ( { model
                 | query = updatedQuery
@@ -113,7 +132,7 @@ updateConfig =
 
                     _ ->
                         Just (FocusStateChanged True)
-        , onTooLow = Nothing
+        , onTooLow = Just EnterDropdown
         , onTooHigh = Nothing
         , onMouseEnter = \_ -> Nothing
         , onMouseLeave = \_ -> Nothing
@@ -124,11 +143,7 @@ updateConfig =
 
 reset : Options msg -> Model -> msg
 reset options model =
-    let
-        filteredData =
-            getFilteredData model.data model.query
-    in
-    options.msg <| Reset (Menu.resetToFirstItem updateConfig filteredData 10 model.menu)
+    options.msg <| Reset (Menu.reset updateConfig model.menu)
 
 
 subscriptions : Options msg -> Sub msg
@@ -224,8 +239,7 @@ viewConfig =
                         , ( "font-size", "16px", True )
                         , ( "line-height", "24px", True )
                         , ( "color", "#555", True )
-                        , ( "background-color", "#fafafa", mouseFocused )
-                        , ( "background-color", "#f5fafd", keyboardFocused )
+                        , ( "background-color", "#f5fafd", mouseFocused || keyboardFocused )
                         , ( "color", "495c68", mouseFocused || keyboardFocused )
                         ]
                 , children =
