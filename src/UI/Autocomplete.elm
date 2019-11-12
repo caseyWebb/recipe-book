@@ -1,5 +1,6 @@
-module UI.Autocomplete exposing (Model, Msg, Options, init, reset, subscriptions, update, view)
+module UI.Autocomplete exposing (Autocomplete, Model, Msg, Options, with)
 
+import Dict
 import Element
 import Element.Background as Background
 import Element.Border as Border
@@ -20,7 +21,7 @@ type alias Options msg a =
 
 
 type alias Model a =
-    { data : List a
+    { data : Dict.Dict String a
     , filteredData : List String
     , query : String
     , inputFocused : Bool
@@ -37,19 +38,22 @@ type Msg a
     | EnterDropdown
 
 
-with :
-    Options msg a
-    ->
-        { init : List a -> Model a
-        , update : Model a -> Msg a -> ( Model a, Maybe msg )
-        , reset : Model a -> msg
-        , subscriptions : Sub msg
-        , view : Model a -> Element.Element msg
-        }
+type alias Autocomplete msg a =
+    { init : List a -> Model a
+    , update : Model a -> Msg a -> ( Model a, Maybe msg )
+    , reset : Model a -> msg
+    , resetData : Model a -> List a -> ( Model a, msg )
+    , subscriptions : Sub msg
+    , view : Model a -> Element.Element msg
+    }
+
+
+with : Options msg a -> Autocomplete msg a
 with options =
     { init = init options
     , update = update options
     , reset = reset options
+    , resetData = resetData options
     , subscriptions = subscriptions options
     , view = view options
     }
@@ -57,7 +61,10 @@ with options =
 
 init : Options msg a -> List a -> Model a
 init options data =
-    { data = data
+    { data =
+        data
+            |> List.map (\d -> ( options.mapData d, d ))
+            |> Dict.fromList
     , filteredData = []
     , query = ""
     , inputFocused = False
@@ -120,10 +127,11 @@ update options model msg =
             )
 
         OptionSelected selection ->
-            -- let
-            --     selectedOption =
-            -- in
-            ( model, Just <| options.onSelect selection )
+            let
+                selectedOption =
+                    Dict.get selection model.data
+            in
+            ( model, Maybe.map options.onSelect selectedOption )
 
         Reset updatedMenu ->
             update options { model | menu = updatedMenu } (UpdateQuery "")
@@ -153,6 +161,20 @@ updateConfig =
 reset : Options msg a -> Model a -> msg
 reset options model =
     options.msg <| Reset (Menu.reset updateConfig model.menu)
+
+
+resetData : Options msg a -> Model a -> List a -> ( Model a, msg )
+resetData options model data =
+    let
+        updatedModel =
+            { model
+                | data =
+                    data
+                        |> List.map (\d -> ( options.mapData d, d ))
+                        |> Dict.fromList
+            }
+    in
+    ( updatedModel, reset options updatedModel )
 
 
 subscriptions : Options msg a -> Sub msg
@@ -277,14 +299,14 @@ viewConfig =
         }
 
 
-getFilteredData : Options msg a -> List a -> String -> List String
+getFilteredData : Options msg a -> Dict.Dict String a -> String -> List String
 getFilteredData options data query =
     let
         lowerQuery =
             String.toLower query
 
         mappedData =
-            List.map options.mapData data
+            List.map options.mapData (Dict.values data)
 
         searchCaseInsensitive =
             \s -> String.toLower s |> String.contains lowerQuery
