@@ -79,7 +79,7 @@ update options model msg =
         MenuMsg menuMsg ->
             let
                 ( newMenuModel, maybeMsg ) =
-                    Menu.update updateConfig menuMsg 10 model.menu model.filteredData
+                    Menu.update updateConfig menuMsg 5 model.menu model.filteredData
 
                 mappedMsg =
                     Maybe.map options.msg maybeMsg
@@ -100,7 +100,7 @@ update options model msg =
         EnterDropdown ->
             let
                 updatedMenu =
-                    Menu.resetToFirstItem updateConfig model.filteredData 10 model.menu
+                    Menu.resetToFirstItem updateConfig model.filteredData 5 model.menu
 
                 updatedModel =
                     { model | menu = updatedMenu }
@@ -117,7 +117,7 @@ update options model msg =
                         Menu.reset updateConfig model.menu
 
                     else
-                        Menu.resetToFirstItem updateConfig updatedFilteredData 10 model.menu
+                        Menu.resetToFirstItem updateConfig updatedFilteredData 5 model.menu
             in
             ( { model
                 | query = updatedQuery
@@ -186,10 +186,17 @@ subscriptions options =
 view : Options msg a -> Model a -> Element.Element msg
 view options model =
     let
+        dropdownDisplayStyle =
+            if model.inputFocused then
+                "inherit"
+
+            else
+                "none"
+
         dropdownMenu =
             if not (List.isEmpty model.filteredData) then
                 Element.el
-                    [ Element.transparent (not model.inputFocused)
+                    [ Element.htmlAttribute <| Html.Attributes.style "display" dropdownDisplayStyle
                     , Element.width Element.fill
                     , Border.solid
                     , Border.color <| Element.rgba 0 0 0 0.15
@@ -206,7 +213,7 @@ view options model =
                         |> Element.maximum 300
                         |> Element.height
                     ]
-                    (Menu.view viewConfig 10 model.menu model.filteredData
+                    (Menu.view viewConfig 5 model.menu model.filteredData
                         |> Html.map MenuMsg
                         |> Html.map options.msg
                         |> Element.html
