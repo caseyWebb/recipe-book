@@ -17,6 +17,7 @@ type alias Options msg a =
     , msg : Msg a -> msg
     , onSelect : a -> msg
     , mapData : a -> String
+    , createNew : String -> a
     }
 
 
@@ -129,9 +130,9 @@ update options model msg =
         OptionSelected selection ->
             let
                 selectedOption =
-                    Dict.get selection model.data
+                    Dict.get selection model.data |> Maybe.withDefault (options.createNew selection)
             in
-            ( model, Maybe.map options.onSelect selectedOption )
+            ( model, Just <| options.onSelect selectedOption )
 
         Reset updatedMenu ->
             update options { model | menu = updatedMenu } (UpdateQuery "")

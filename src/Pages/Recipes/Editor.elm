@@ -101,14 +101,13 @@ update msg model =
                         newIngredientAutocompleteModel
                         updatedAvailableIngredients
 
+                updatedRecipe =
+                    { recipe | ingredients = updatedRecipeIngredients }
+
                 updatedModel =
                     { model
-                        | recipe =
-                            { recipe
-                                | ingredients = updatedRecipeIngredients
-                            }
-                        , newIngredientAutocompleteModel =
-                            updatedNewIngredientAutocompleteModel
+                        | recipe = updatedRecipe
+                        , newIngredientAutocompleteModel = updatedNewIngredientAutocompleteModel
                     }
             in
             update nextMsg updatedModel
@@ -272,6 +271,7 @@ newIngredientAutocomplete =
         , msg = \msg -> NewIngredientAutocompleteMsg msg
         , onSelect = \ingredient -> SelectNewIngredient ingredient
         , mapData = .name
+        , createNew = \i -> { name = i, section = "Unknown", quantity = 1, unit = "" }
         }
 
 
