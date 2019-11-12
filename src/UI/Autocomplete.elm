@@ -11,15 +11,16 @@ import Menu
 import UI
 
 
-type alias Options msg =
+type alias Options msg a =
     { placeholder : Maybe String
-    , msg : Msg -> msg
-    , onSelect : String -> msg
+    , msg : Msg a -> msg
+    , onSelect : a -> msg
+    , mapData : a -> String
     }
 
 
-type alias Model =
-    { data : List String
+type alias Model a =
+    { data : List a
     , filteredData : List String
     , query : String
     , inputFocused : Bool
@@ -27,7 +28,7 @@ type alias Model =
     }
 
 
-type Msg
+type Msg a
     = MenuMsg Menu.Msg
     | FocusStateChanged Bool
     | UpdateQuery String
@@ -36,17 +37,35 @@ type Msg
     | EnterDropdown
 
 
-init : List String -> Model
-init data =
+with :
+    Options msg a
+    ->
+        { init : List a -> Model a
+        , update : Model a -> Msg a -> ( Model a, Maybe msg )
+        , reset : Model a -> msg
+        , subscriptions : Sub msg
+        , view : Model a -> Element.Element msg
+        }
+with options =
+    { init = init options
+    , update = update options
+    , reset = reset options
+    , subscriptions = subscriptions options
+    , view = view options
+    }
+
+
+init : Options msg a -> List a -> Model a
+init options data =
     { data = data
-    , filteredData = data
+    , filteredData = []
     , query = ""
     , inputFocused = False
     , menu = Menu.empty
     }
 
 
-update : Options msg -> Model -> Msg -> ( Model, Maybe msg )
+update : Options msg a -> Model a -> Msg a -> ( Model a, Maybe msg )
 update options model msg =
     case msg of
         MenuMsg menuMsg ->
@@ -83,7 +102,7 @@ update options model msg =
         UpdateQuery updatedQuery ->
             let
                 updatedFilteredData =
-                    getFilteredData model.data updatedQuery
+                    getFilteredData options model.data updatedQuery
 
                 updatedMenuModel =
                     if String.isEmpty updatedQuery then
@@ -101,13 +120,16 @@ update options model msg =
             )
 
         OptionSelected selection ->
+            -- let
+            --     selectedOption =
+            -- in
             ( model, Just <| options.onSelect selection )
 
         Reset updatedMenu ->
             update options { model | menu = updatedMenu } (UpdateQuery "")
 
 
-updateConfig : Menu.UpdateConfig Msg String
+updateConfig : Menu.UpdateConfig (Msg a) String
 updateConfig =
     Menu.updateConfig
         { toId = identity
@@ -128,17 +150,17 @@ updateConfig =
         }
 
 
-reset : Options msg -> Model -> msg
+reset : Options msg a -> Model a -> msg
 reset options model =
     options.msg <| Reset (Menu.reset updateConfig model.menu)
 
 
-subscriptions : Options msg -> Sub msg
+subscriptions : Options msg a -> Sub msg
 subscriptions options =
     Menu.subscription |> Sub.map MenuMsg |> Sub.map options.msg
 
 
-view : Options msg -> Model -> Element.Element msg
+view : Options msg a -> Model a -> Element.Element msg
 view options model =
     let
         dropdownMenu =
@@ -181,6 +203,7 @@ view options model =
                 noop =
                     Decode.fail "noop"
 
+                preventDefaultAnd : Msg a -> Decode.Decoder msg
                 preventDefaultAnd msg =
                     Decode.succeed <| options.msg msg
             in
@@ -236,7 +259,7 @@ viewConfig =
                 , ( "overflow-y", "auto", True )
                 ]
         , li =
-            \mouseFocused keyboardFocused text ->
+            \mouseFocused keyboardFocused item ->
                 { attributes =
                     inlineStyles
                         [ ( "display", "block", True )
@@ -249,18 +272,21 @@ viewConfig =
                         , ( "color", "495c68", mouseFocused || keyboardFocused )
                         ]
                 , children =
-                    [ Html.text text ]
+                    [ Html.text item ]
                 }
         }
 
 
-getFilteredData : List String -> String -> List String
-getFilteredData data query =
+getFilteredData : Options msg a -> List a -> String -> List String
+getFilteredData options data query =
     let
         lowerQuery =
             String.toLower query
 
+        mappedData =
+            List.map options.mapData data
+
         searchCaseInsensitive =
             \s -> String.toLower s |> String.contains lowerQuery
     in
-    List.filter searchCaseInsensitive data
+    List.filter searchCaseInsensitive mappedData

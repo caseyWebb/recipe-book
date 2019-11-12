@@ -20,7 +20,7 @@ type alias Model =
     , saving : Bool
     , isNew : Bool
     , saveError : Maybe String
-    , allIngredients : List String
+    , allIngredients : List Ingredient
     , newIngredientAutocomplete : Autocomplete.Model
     }
 
@@ -29,7 +29,7 @@ type Msg
     = FetchRecipe String
     | RecipeRecieved Recipe
     | FetchIngredients
-    | ReceiveIngredients (List String)
+    | ReceiveIngredients (List Ingredient)
     | SaveRecipe
     | RecipeSaved (Maybe String)
     | SelectNewIngredient String
@@ -75,11 +75,14 @@ init navKey maybeId =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        availableIngredients : List String -> List Ingredient -> List String
+        mapName =
+            List.map .name
+
+        availableIngredients : List Ingredient -> List Ingredient -> List String
         availableIngredients allIngredients addedIngredients =
             Set.diff
-                (Set.fromList allIngredients)
-                (Set.fromList (List.map .name addedIngredients))
+                (Set.fromList <| mapName allIngredients)
+                (Set.fromList <| mapName addedIngredients)
                 |> Set.toList
 
         updateIngredients updatedRecipeIngredients =
