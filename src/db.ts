@@ -1,31 +1,45 @@
 import { openDB, DBSchema } from 'idb'
+import { Elm } from './Main'
 
 const VERSION = 1
 
-type ForeignKey<T extends Record<string, any>, TProp extends keyof T> = Omit<
-  T,
-  TProp
-> &
-  Record<TProp, string[]>
+type ExtractElmPortData<
+  TProp extends keyof Elm.Main.App['ports']
+> = Elm.Main.App['ports'][TProp] extends {
+  subscribe(callback: (data: infer TData) => void): void
+}
+  ? TData
+  : Elm.Main.App['ports'][TProp] extends {
+      send(data: infer TData): void
+    }
+  ? TData
+  : unknown
 
-type Recipe = {
+type RecipeSchema = {
   slug: string
   name: string
-  ingredients: Ingredient[]
+  ingredients: {
+    ingredientId: string
+    quantity: number
+    unit: string
+  }[]
 }
 
-type Ingredient = {
+type IngredientSchema = {
   name: string
+  section: string
 }
+
+type Recipe = ExtractElmPortData<'saveRecipe'>
 
 interface DB extends DBSchema {
   recipes: {
     key: string
-    value: ForeignKey<Recipe, 'ingredients'>
+    value: RecipeSchema
   }
   ingredients: {
     key: string
-    value: Ingredient
+    value: IngredientSchema
     indexes: { name: string }
   }
 }
@@ -33,7 +47,7 @@ interface DB extends DBSchema {
 async function getDB() {
   return await openDB<DB>('recipe-book', VERSION, {
     upgrade(db) {
-      const recipeStore = db.createObjectStore('recipes', { keyPath: 'slug' })
+      db.createObjectStore('recipes', { keyPath: 'slug' })
       const ingredientStore = db.createObjectStore('ingredients', {
         keyPath: 'name'
       })
@@ -46,7 +60,11 @@ export async function saveRecipe(recipe: Recipe): Promise<null> {
   const db = await getDB()
   const ingredientDocs = recipe.ingredients
   const recipeDoc = Object.assign({}, recipe, {
-    ingredients: recipe.ingredients.map((i) => i.name)
+    ingredients: recipe.ingredients.map((i) => ({
+      ingredientId: i.name,
+      quantity: 0,
+      unit: ''
+    }))
   })
   await Promise.all([
     db.put('recipes', recipeDoc),

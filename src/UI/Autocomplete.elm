@@ -1,4 +1,4 @@
-module UI.Autocomplete exposing (Msg, Options, State, init, subscriptions, update, view)
+module UI.Autocomplete exposing (Model, Msg, Options, init, reset, subscriptions, update, view)
 
 import Element
 import Element.Background as Background
@@ -11,50 +11,163 @@ import Menu
 import UI
 
 
-type alias Options msg =
+type alias Options msg a =
     { placeholder : Maybe String
-    , state : State
-    , msg : Msg -> msg
-    , data : List String
-    , onSelect : String -> msg
+    , msg : Msg a -> msg
+    , onSelect : a -> msg
+    , mapData : a -> String
     }
 
 
-type alias State =
-    { query : String
+type alias Model a =
+    { data : List a
+    , filteredData : List String
+    , query : String
     , inputFocused : Bool
     , menu : Menu.State
     }
 
 
-type Msg
+type Msg a
     = MenuMsg Menu.Msg
-    | InputFocused
-    | InputBlurred
+    | FocusStateChanged Bool
     | UpdateQuery String
     | OptionSelected String
-    | CreateNewOption
-    | NoOp
+    | Reset Menu.State
+    | EnterDropdown
 
 
-init : State
-init =
-    { query = ""
+with :
+    Options msg a
+    ->
+        { init : List a -> Model a
+        , update : Model a -> Msg a -> ( Model a, Maybe msg )
+        , reset : Model a -> msg
+        , subscriptions : Sub msg
+        , view : Model a -> Element.Element msg
+        }
+with options =
+    { init = init options
+    , update = update options
+    , reset = reset options
+    , subscriptions = subscriptions options
+    , view = view options
+    }
+
+
+init : Options msg a -> List a -> Model a
+init options data =
+    { data = data
+    , filteredData = []
+    , query = ""
     , inputFocused = False
     , menu = Menu.empty
     }
 
 
-view : Options msg -> Element.Element msg
-view options =
-    let
-        data =
-            getFilteredData options
+update : Options msg a -> Model a -> Msg a -> ( Model a, Maybe msg )
+update options model msg =
+    case msg of
+        MenuMsg menuMsg ->
+            let
+                ( newMenuModel, maybeMsg ) =
+                    Menu.update updateConfig menuMsg 10 model.menu model.filteredData
 
+                mappedMsg =
+                    Maybe.map options.msg maybeMsg
+            in
+            ( { model | menu = newMenuModel }, mappedMsg )
+
+        FocusStateChanged focused ->
+            let
+                updatedMenu =
+                    if focused then
+                        model.menu
+
+                    else
+                        Menu.reset updateConfig model.menu
+            in
+            ( { model | inputFocused = focused, menu = updatedMenu }, Nothing )
+
+        EnterDropdown ->
+            let
+                updatedMenu =
+                    Menu.resetToFirstItem updateConfig model.filteredData 10 model.menu
+
+                updatedModel =
+                    { model | menu = updatedMenu }
+            in
+            ( updatedModel, Nothing )
+
+        UpdateQuery updatedQuery ->
+            let
+                updatedFilteredData =
+                    getFilteredData options model.data updatedQuery
+
+                updatedMenuModel =
+                    if String.isEmpty updatedQuery then
+                        Menu.reset updateConfig model.menu
+
+                    else
+                        Menu.resetToFirstItem updateConfig updatedFilteredData 10 model.menu
+            in
+            ( { model
+                | query = updatedQuery
+                , filteredData = updatedFilteredData
+                , menu = updatedMenuModel
+              }
+            , Nothing
+            )
+
+        OptionSelected selection ->
+            -- let
+            --     selectedOption =
+            -- in
+            ( model, Just <| options.onSelect selection )
+
+        Reset updatedMenu ->
+            update options { model | menu = updatedMenu } (UpdateQuery "")
+
+
+updateConfig : Menu.UpdateConfig (Msg a) String
+updateConfig =
+    Menu.updateConfig
+        { toId = identity
+        , onKeyDown =
+            \code _ ->
+                case code of
+                    27 ->
+                        Just (FocusStateChanged False)
+
+                    _ ->
+                        Nothing
+        , onTooLow = Just EnterDropdown
+        , onTooHigh = Nothing
+        , onMouseEnter = \_ -> Nothing
+        , onMouseLeave = \_ -> Nothing
+        , onMouseClick = \id -> Just <| OptionSelected id
+        , separateSelections = False
+        }
+
+
+reset : Options msg a -> Model a -> msg
+reset options model =
+    options.msg <| Reset (Menu.reset updateConfig model.menu)
+
+
+subscriptions : Options msg a -> Sub msg
+subscriptions options =
+    Menu.subscription |> Sub.map MenuMsg |> Sub.map options.msg
+
+
+view : Options msg a -> Model a -> Element.Element msg
+view options model =
+    let
         dropdownMenu =
-            if options.state.inputFocused && not (List.isEmpty data) then
+            if not (List.isEmpty model.filteredData) then
                 Element.el
-                    [ Element.width Element.fill
+                    [ Element.transparent (not model.inputFocused)
+                    , Element.width Element.fill
                     , Border.solid
                     , Border.color <| Element.rgba 0 0 0 0.15
                     , Border.width 1
@@ -70,7 +183,7 @@ view options =
                         |> Element.maximum 300
                         |> Element.height
                     ]
-                    (Menu.view viewConfig 10 options.state.menu data
+                    (Menu.view viewConfig 10 model.menu model.filteredData
                         |> Html.map MenuMsg
                         |> Html.map options.msg
                         |> Element.html
@@ -83,11 +196,31 @@ view options =
             handler |> Element.htmlAttribute
 
         tabEnterDecoderHelper code =
+            let
+                ( maybeSelection, _ ) =
+                    Menu.current model.menu
+
+                noop =
+                    Decode.fail "noop"
+
+                preventDefaultAnd : Msg a -> Decode.Decoder msg
+                preventDefaultAnd msg =
+                    Decode.succeed <| options.msg msg
+            in
             if code == 9 || code == 13 then
-                Decode.succeed (options.msg NoOp)
+                case maybeSelection of
+                    Just selection ->
+                        preventDefaultAnd <| OptionSelected selection
+
+                    Nothing ->
+                        if String.isEmpty model.query then
+                            noop
+
+                        else
+                            preventDefaultAnd <| OptionSelected model.query
 
             else
-                Decode.fail "not handling that key"
+                noop
 
         tabEnterDecoder =
             Html.Events.keyCode
@@ -96,96 +229,15 @@ view options =
     in
     UI.textInput
         [ Element.below dropdownMenu
-        , wrapHandler <| Html.Events.onFocus (options.msg InputFocused)
-        , wrapHandler <| Html.Events.onBlur (options.msg InputBlurred)
+        , wrapHandler <| Html.Events.onFocus (options.msg (FocusStateChanged True))
+        , wrapHandler <| Html.Events.onBlur (options.msg (FocusStateChanged False))
         , wrapHandler <| Html.Events.preventDefaultOn "keydown" tabEnterDecoder
         ]
         { onChange = \s -> options.msg (UpdateQuery s)
-        , text = options.state.query
+        , text = model.query
         , placeholder = options.placeholder
         , label = Nothing
         }
-
-
-update : Options msg -> Msg -> ( State, Maybe msg )
-update options msg =
-    let
-        filteredData =
-            getFilteredData options
-
-        resetMenuState =
-            Menu.resetToFirstItem updateConfig filteredData 10 options.state.menu
-
-        currentState =
-            options.state
-
-        updatedState =
-            { currentState | menu = resetMenuState }
-    in
-    case msg of
-        MenuMsg menuMsg ->
-            let
-                ( newMenuState, maybeMsg ) =
-                    Menu.update updateConfig menuMsg 10 options.state.menu filteredData
-
-                mappedMsg =
-                    Maybe.map options.msg maybeMsg
-            in
-            ( { updatedState | menu = newMenuState }, mappedMsg )
-
-        InputFocused ->
-            ( { updatedState | inputFocused = True }, Nothing )
-
-        InputBlurred ->
-            ( { updatedState | inputFocused = False }, Nothing )
-
-        UpdateQuery newQuery ->
-            ( { updatedState | query = newQuery }, Nothing )
-
-        CreateNewOption ->
-            let
-                updateSelectionMsg =
-                    Just <| options.onSelect options.state.query
-            in
-            ( { updatedState | query = "" }, updateSelectionMsg )
-
-        OptionSelected selection ->
-            let
-                updateSelectionMsg =
-                    Just <| options.onSelect selection
-            in
-            ( { updatedState | query = "" }, updateSelectionMsg )
-
-        NoOp ->
-            ( options.state, Nothing )
-
-
-updateConfig : Menu.UpdateConfig Msg String
-updateConfig =
-    Menu.updateConfig
-        { toId = identity
-        , onKeyDown =
-            \code maybeId ->
-                if code == 9 then
-                    Maybe.map OptionSelected maybeId
-
-                else if code == 13 then
-                    Just CreateNewOption
-
-                else
-                    Nothing
-        , onTooLow = Nothing
-        , onTooHigh = Nothing
-        , onMouseEnter = \_ -> Nothing
-        , onMouseLeave = \_ -> Nothing
-        , onMouseClick = \id -> Just <| OptionSelected id
-        , separateSelections = False
-        }
-
-
-subscriptions : Options msg -> Sub msg
-subscriptions options =
-    Menu.subscription |> Sub.map MenuMsg |> Sub.map options.msg
 
 
 viewConfig : Menu.ViewConfig String
@@ -207,7 +259,7 @@ viewConfig =
                 , ( "overflow-y", "auto", True )
                 ]
         , li =
-            \mouseFocused keyboardFocused text ->
+            \mouseFocused keyboardFocused item ->
                 { attributes =
                     inlineStyles
                         [ ( "display", "block", True )
@@ -216,23 +268,25 @@ viewConfig =
                         , ( "font-size", "16px", True )
                         , ( "line-height", "24px", True )
                         , ( "color", "#555", True )
-                        , ( "background-color", "#fafafa", mouseFocused )
-                        , ( "background-color", "#f5fafd", keyboardFocused )
+                        , ( "background-color", "#f5fafd", mouseFocused || keyboardFocused )
                         , ( "color", "495c68", mouseFocused || keyboardFocused )
                         ]
                 , children =
-                    [ Html.text text ]
+                    [ Html.text item ]
                 }
         }
 
 
-getFilteredData : Options msg -> List String
-getFilteredData options =
+getFilteredData : Options msg a -> List a -> String -> List String
+getFilteredData options data query =
     let
-        query =
-            String.toLower options.state.query
+        lowerQuery =
+            String.toLower query
+
+        mappedData =
+            List.map options.mapData data
 
         searchCaseInsensitive =
-            \s -> String.toLower s |> String.contains query
+            \s -> String.toLower s |> String.contains lowerQuery
     in
-    List.filter searchCaseInsensitive options.data
+    List.filter searchCaseInsensitive mappedData
