@@ -5,6 +5,8 @@ import Data.Ingredient exposing (Ingredient, fetchIngredients, receiveIngredient
 import Data.Recipe exposing (Recipe, findRecipeById, newRecipe, receiveRecipe, recipeSaved, saveRecipe)
 import Dict
 import Element
+import Element.Font as Font
+import Element.Input as Input
 import Process
 import Regex
 import Route
@@ -214,35 +216,24 @@ view : Model -> Element.Element Msg
 view model =
     Element.column
         []
-        [ UI.header "New Recipe"
-        , recipeForm model
+        [ viewForm model
         ]
 
 
-recipeForm : Model -> Element.Element Msg
-recipeForm model =
+viewForm : Model -> Element.Element Msg
+viewForm model =
     let
         titleInput =
-            UI.textInput []
+            UI.textInput
+                [ Font.size 36
+                , Element.paddingXY 0 12
+                , Element.spacing 0
+                ]
                 { onChange = \s -> UpdateName s
                 , text = model.recipe.name
-                , placeholder = Nothing
-                , label = Just "Title"
+                , placeholder = Just "New Recipe"
+                , label = Nothing
                 }
-
-        ingredientList =
-            model.recipe.ingredients
-                |> List.map
-                    (\i ->
-                        Element.row []
-                            [ Element.text i.name
-                            , UI.button { onPress = Just <| DeleteIngredient i.name, label = "Delete" }
-                            ]
-                    )
-                |> Element.column []
-
-        newIngredientInput =
-            newIngredientAutocomplete.view model.newIngredientAutocompleteModel
 
         saveButton =
             UI.button { onPress = Just SaveRecipe, label = "Save Recipe" }
@@ -255,12 +246,59 @@ recipeForm model =
                 Just err ->
                     Element.text err
     in
-    Element.column []
+    Element.column
+        [ Element.spacingXY 0 50
+        ]
         [ titleInput
-        , ingredientList
-        , newIngredientInput
+        , viewIngredients model
         , saveButton
         , errMessage
+        ]
+
+
+viewIngredients : Model -> Element.Element Msg
+viewIngredients model =
+    let
+        ingredientsHeader =
+            Element.el
+                [ Font.size 24
+                , Font.bold
+                ]
+                (Element.text "Ingredients")
+
+        ingredientList =
+            model.recipe.ingredients
+                |> List.map
+                    (\i ->
+                        Element.row
+                            [ Element.width Element.fill
+                            , Font.size 16
+                            , Element.onLeft <|
+                                Input.button
+                                    [ Element.alignRight
+                                    , Element.paddingEach { left = 0, right = 10, top = 0, bottom = 0 }
+                                    ]
+                                    { onPress = Just <| DeleteIngredient i.name
+                                    , label = Element.el [ Font.bold ] (Element.text "")
+                                    }
+                            ]
+                            [ Element.text i.name
+                            ]
+                    )
+                |> Element.column [ Element.width Element.fill, Element.spacing 10 ]
+
+        newIngredientInput =
+            newIngredientAutocomplete.view model.newIngredientAutocompleteModel
+    in
+    Element.column
+        [ Element.width Element.fill
+        , Element.spacing 20
+        ]
+        [ ingredientsHeader
+        , Element.column []
+            [ ingredientList
+            , newIngredientInput
+            ]
         ]
 
 

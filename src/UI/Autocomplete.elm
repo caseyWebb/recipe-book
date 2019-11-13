@@ -4,6 +4,7 @@ import Dict
 import Element
 import Element.Background as Background
 import Element.Border as Border
+import Element.Font as Font
 import Html
 import Html.Attributes
 import Html.Events
@@ -262,6 +263,11 @@ view options model =
         , wrapHandler <| Html.Events.onFocus (options.msg (FocusStateChanged True))
         , wrapHandler <| Html.Events.onBlur (options.msg (FocusStateChanged False))
         , wrapHandler <| Html.Events.preventDefaultOn "keydown" tabEnterDecoder
+        , Font.size 16
+        , Element.spacing 0
+        , Element.paddingEach { left = 0, right = 0, top = 12, bottom = 12 }
+
+        -- , Font.he
         ]
         { onChange = \s -> options.msg (UpdateQuery s)
         , text = model.query
@@ -295,8 +301,8 @@ viewConfig =
                         [ ( "display", "block", True )
                         , ( "padding", "9px 8px", True )
                         , ( "cursor", "pointer", True )
-                        , ( "font-size", "16px", True )
-                        , ( "line-height", "24px", True )
+                        , ( "font-size", "14px", True )
+                        , ( "line-height", "16px", True )
                         , ( "color", "#555", True )
                         , ( "background-color", "#f5fafd", mouseFocused || keyboardFocused )
                         , ( "color", "495c68", mouseFocused || keyboardFocused )

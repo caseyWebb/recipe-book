@@ -40,8 +40,9 @@ render el =
 header : String -> Element msg
 header t =
     el
-        [ Font.size 24
+        [ Font.size 36
         , Font.bold
+        , Element.paddingEach { top = 0, left = 0, right = 0, bottom = 50 }
         ]
     <|
         text t
@@ -85,7 +86,8 @@ textInput attrs opts =
     Input.text
         (List.concat
             [ [ Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
-              , Element.spacing 10
+              , Border.rounded 0
+              , Element.width Element.fill
               , Element.focused
                     [ Border.shadow { offset = ( 0, 0 ), size = 0, blur = 0, color = Element.rgb 0 0 0 }
                     ]
