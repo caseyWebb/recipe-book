@@ -3,6 +3,8 @@ module Pages.Recipes.Show exposing (Model, Msg, init, subscriptions, update, vie
 import Data.Ingredient exposing (Ingredient)
 import Data.Recipe exposing (Recipe, findRecipeById, receiveRecipe)
 import Element
+import Element.Background as Background
+import Element.Font as Font
 import Process
 import Route
 import Task
@@ -47,18 +49,50 @@ view model =
             Element.text "loading"
 
         Just recipe ->
-            Element.column []
-                [ Element.row []
-                    [ Element.text recipe.name
-                    , UI.link "Edit" (Route.EditRecipe model.id)
-                    ]
+            let
+                titleHeader =
+                    Element.el
+                        [ Font.bold
+                        , Font.size 36
+                        , Element.paddingEach { top = 0, bottom = 36, left = 0, right = 0 }
+                        ]
+                    <|
+                        Element.text recipe.name
+
+                editRecipeButton =
+                    Element.column []
+                        [ Element.link
+                            [ Background.color <| Element.rgb255 170 170 170
+                            , Element.paddingXY 18 12
+                            , Font.color UI.white
+                            , Font.bold
+                            , Font.size 14
+                            ]
+                            { url = Route.toString <| Route.EditRecipe model.id
+                            , label = Element.text "Edit Recipe"
+                            }
+                        ]
+            in
+            Element.column
+                [ Element.onRight editRecipeButton
+                , Element.width Element.fill
+                ]
+                [ titleHeader
                 , viewIngredients recipe.ingredients
                 ]
 
 
 viewIngredients : List Ingredient -> Element.Element Msg
 viewIngredients ingredients =
-    Element.column []
-        (ingredients
-            |> List.map (\i -> Element.el [] <| Element.text i.name)
-        )
+    Element.column [ Element.spacing 8 ] <|
+        [ Element.el
+            [ Font.bold
+            , Font.size 22
+            , Element.paddingEach { top = 0, bottom = 18, right = 0, left = 0 }
+            ]
+          <|
+            Element.text "Ingredients"
+        ]
+            ++ (ingredients
+                    |> List.map (\i -> Element.el [] <| Element.text i.name)
+               )

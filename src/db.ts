@@ -101,8 +101,9 @@ export async function fetchRecipeById(id: string): Promise<string | Recipe> {
   const recipesStore = tx.objectStore('recipes')
   const recipe = await recipesStore.get(id)
   if (!recipe) return 'Recipe not found'
+  const ret = await _joinIngredients(recipe, tx)
   await tx.done
-  return await _joinIngredients(recipe, tx)
+  return ret
 }
 
 export async function listIngredients(): Promise<Ingredient[]> {

@@ -1,4 +1,4 @@
-module UI exposing (TextInputOptions, button, header, link, render, textInput)
+module UI exposing (TextInputOptions, button, green, header, link, render, textInput, white)
 
 import Element exposing (Element, el, text)
 import Element.Background as Background
@@ -9,32 +9,30 @@ import Html
 import Route
 
 
+green =
+    Element.rgb255 50 219 50
+
+
+white =
+    Element.rgb 1 1 1
+
+
 render : Element msg -> Html.Html msg
 render el =
-    let
-        rightMenu =
-            Element.column []
-                [ Element.link []
-                    { url = Route.toString Route.NewRecipe
-                    , label = Element.text "Add New Recipe"
-                    }
-                ]
-    in
     Element.layout
         [ Font.family
             [ Font.typeface "Source Sans Pro"
             , Font.typeface "Helvetica Neue"
             , Font.sansSerif
             ]
-        , Font.color <| Element.rgb255 196 196 196
-        , Background.color <| Element.rgb 0 0 0
+        , Font.color <| Element.rgb255 30 30 30
+        , Background.color <| Element.rgb 255 255 255
         , Element.paddingXY 0 50
         ]
     <|
         Element.el
             [ Element.width <| (Element.fill |> Element.maximum 800)
             , Element.centerX
-            , Element.onRight rightMenu
             ]
             el
 
@@ -62,7 +60,9 @@ type alias ButtonOptions msg =
 
 button : ButtonOptions msg -> Element msg
 button opts =
-    Input.button []
+    Input.button
+        [ Element.paddingXY 22 18
+        ]
         { onPress = opts.onPress
         , label = text opts.label
         }

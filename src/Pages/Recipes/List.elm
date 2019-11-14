@@ -2,9 +2,12 @@ module Pages.Recipes.List exposing (Model, Msg, init, subscriptions, update, vie
 
 import Data.Recipe exposing (Recipe, RecipeList, fetchRecipes, receiveRecipes)
 import Element
+import Element.Background as Background
+import Element.Font as Font
 import Process
 import Route
 import Task
+import UI
 
 
 type alias Model =
@@ -38,12 +41,32 @@ subscriptions _ =
 
 view : Model -> Element.Element Msg
 view model =
+    let
+        addNewRecipeButton =
+            Element.column []
+                [ Element.link
+                    [ Background.color UI.green
+                    , Element.paddingXY 18 12
+                    , Font.color UI.white
+                    , Font.bold
+                    , Font.size 14
+                    ]
+                    { url = Route.toString Route.NewRecipe
+                    , label = Element.text "Add New Recipe"
+                    }
+                ]
+    in
     case model of
         Nothing ->
             Element.text "Loading"
 
         Just data ->
-            viewRecipes data
+            Element.el
+                [ Element.width Element.fill
+                , Element.onRight addNewRecipeButton
+                ]
+            <|
+                viewRecipes data
 
 
 viewRecipes : RecipeList -> Element.Element Msg
@@ -56,5 +79,18 @@ viewRecipe recipe =
     let
         recipePath =
             Route.toString (Route.Recipe recipe.slug)
+
+        viewStarRecipe =
+            Element.el
+                [ Element.paddingXY 10 0
+                , Element.transparent True
+                , Element.mouseOver <| [ Element.transparent False ]
+                ]
+            <|
+                Element.text "☆"
     in
-    Element.link [] { url = recipePath, label = Element.text recipe.name }
+    Element.link
+        [ Element.onLeft <| viewStarRecipe
+        , Font.bold
+        ]
+        { url = recipePath, label = Element.text recipe.name }
