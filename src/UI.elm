@@ -1,25 +1,42 @@
 module UI exposing (TextInputOptions, button, header, link, render, textInput)
 
 import Element exposing (Element, el, text)
+import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Html
-import Html.Events
 import Route
 
 
 render : Element msg -> Html.Html msg
 render el =
+    let
+        rightMenu =
+            Element.column []
+                [ Element.link []
+                    { url = Route.toString Route.NewRecipe
+                    , label = Element.text "Add New Recipe"
+                    }
+                ]
+    in
     Element.layout
         [ Font.family
             [ Font.typeface "Source Sans Pro"
             , Font.typeface "Helvetica Neue"
             , Font.sansSerif
             ]
+        , Font.color <| Element.rgb255 196 196 196
+        , Background.color <| Element.rgb 0 0 0
+        , Element.paddingXY 0 50
         ]
     <|
-        el
+        Element.el
+            [ Element.width <| (Element.fill |> Element.maximum 800)
+            , Element.centerX
+            , Element.onRight rightMenu
+            ]
+            el
 
 
 header : String -> Element msg

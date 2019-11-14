@@ -43,20 +43,12 @@ view model =
             Element.text "Loading"
 
         Just data ->
-            Element.column []
-                [ Element.link [] { url = "/recipes/new", label = Element.text "New Recipe" }
-                , viewRecipes data
-                ]
+            viewRecipes data
 
 
 viewRecipes : RecipeList -> Element.Element Msg
 viewRecipes recipes =
-    Element.table []
-        { data = recipes.recipes
-        , columns =
-            [ { header = Element.text "Title", width = Element.fill, view = viewRecipe }
-            ]
-        }
+    Element.column [ Element.spacing 20 ] <| List.map viewRecipe recipes.recipes
 
 
 viewRecipe : Recipe -> Element.Element Msg
