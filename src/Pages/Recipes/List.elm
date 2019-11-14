@@ -83,14 +83,19 @@ viewRecipe recipe =
         viewStarRecipe =
             Element.el
                 [ Element.paddingXY 10 0
-                , Element.transparent True
-                , Element.mouseOver <| [ Element.transparent False ]
                 ]
             <|
                 Element.text "☆"
     in
-    Element.link
+    Element.el
         [ Element.onLeft <| viewStarRecipe
         , Font.bold
+        , Font.color <| Element.rgb 1 1 1
+        , Element.mouseOver [ Font.color <| Element.rgb 0 0 0 ]
         ]
-        { url = recipePath, label = Element.text recipe.name }
+    <|
+        Element.link
+            [ Font.color <| Element.rgb 0 0 0
+            , Element.onLeft viewStarRecipe
+            ]
+            { url = recipePath, label = Element.text recipe.name }
