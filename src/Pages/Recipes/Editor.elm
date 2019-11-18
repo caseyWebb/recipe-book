@@ -3,7 +3,7 @@ module Pages.Recipes.Editor exposing (Model, Msg, init, subscriptions, update, v
 import Browser.Navigation as Nav
 import Data.Ingredient exposing (Ingredient, fetchIngredients, receiveIngredients)
 import Data.Recipe exposing (Recipe, findRecipeById, newRecipe, receiveRecipe, recipeSaved, saveRecipe)
-import Dict
+import Dict exposing (Dict)
 import Element
 import Element.Font as Font
 import Element.Input as Input
@@ -17,12 +17,13 @@ import UI.Autocomplete as Autocomplete
 
 type alias Model =
     { navKey : Nav.Key
-    , recipe : Recipe
     , loading : Bool
     , saving : Bool
     , isNew : Bool
     , saveError : Maybe String
-    , allIngredients : List Ingredient
+    , name : String
+    , allIngredients : Dict String Ingredient
+    , recipeIngredients : Dict String Ingredient
     , newIngredientAutocompleteModel : Autocomplete.Model Ingredient
     }
 
@@ -65,9 +66,10 @@ init navKey maybeId =
             , saving = False
             , loading = isNew
             , isNew = isNew
-            , recipe = newRecipe
             , saveError = Nothing
-            , allIngredients = []
+            , allIngredients = Dict.empty
+            , name = ""
+            , recipeIngredients = Dict.empty
             , newIngredientAutocompleteModel = newIngredientAutocomplete.init []
             }
     in
@@ -76,94 +78,48 @@ init navKey maybeId =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        availableIngredients : List Ingredient -> List Ingredient -> List Ingredient
-        availableIngredients allIngredients addedIngredients =
-            let
-                toDict : List Ingredient -> Dict.Dict String Ingredient
-                toDict data =
-                    data
-                        |> List.map (\i -> ( i.name, i ))
-                        |> Dict.fromList
-            in
-            Dict.diff
-                (toDict allIngredients)
-                (toDict addedIngredients)
-                |> Dict.values
-
-        updateIngredients : Model -> List Ingredient -> List Ingredient -> ( Model, Cmd Msg )
-        updateIngredients currentModel updatedAllIngredients updatedRecipeIngredients =
-            let
-                updatedAvailableIngredients =
-                    availableIngredients
-                        updatedAllIngredients
-                        updatedRecipeIngredients
-
-                ( updatedNewIngredientAutocompleteModel, nextMsg ) =
-                    newIngredientAutocomplete.resetData
-                        newIngredientAutocompleteModel
-                        updatedAvailableIngredients
-
-                currentRecipe =
-                    currentModel.recipe
-
-                updatedRecipe =
-                    { currentRecipe | ingredients = updatedRecipeIngredients }
-
-                updatedModel =
-                    { currentModel
-                        | recipe = updatedRecipe
-                        , newIngredientAutocompleteModel = updatedNewIngredientAutocompleteModel
-                    }
-            in
-            update nextMsg updatedModel
-
-        recipe =
-            model.recipe
-
-        newIngredientAutocompleteModel =
-            model.newIngredientAutocompleteModel
-    in
     case msg of
         FetchRecipe id ->
             ( model, findRecipeById id )
 
         RecipeRecieved updatedRecipe ->
             let
-                updatedModel =
-                    { model | recipe = updatedRecipe }
+                updators : List Msg
+                updators =
+                    UpdateName updatedRecipe.name
+                        :: List.map (\i -> SelectNewIngredient i) updatedRecipe.ingredients
+
+                accumulator : Msg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+                accumulator =
+                    \fieldMsg accum ->
+                        let
+                            ( currentModel, currentCmd ) =
+                                accum
+
+                            ( updatedModel, nextCmd ) =
+                                update fieldMsg currentModel
+                        in
+                        ( updatedModel, Cmd.batch [ currentCmd, nextCmd ] )
             in
-            updateIngredients updatedModel updatedModel.allIngredients updatedRecipe.ingredients
+            List.foldl accumulator ( model, Cmd.none ) updators
 
         FetchIngredients ->
             ( model, fetchIngredients () )
 
         ReceiveIngredients ingredients ->
-            let
-                updatedModel =
-                    { model | allIngredients = ingredients }
-            in
-            updateIngredients updatedModel ingredients updatedModel.recipe.ingredients
+            ingredients
+                |> List.map (\i -> ( i.name, i ))
+                |> Dict.fromList
+                |> updateAllIngredients model
 
         UpdateName name ->
-            let
-                updatedSlug =
-                    if model.isNew then
-                        slugify name
-
-                    else
-                        model.recipe.slug
-
-                updatedRecipe =
-                    { recipe | name = name, slug = updatedSlug }
-            in
-            ( { model | recipe = updatedRecipe }, Cmd.none )
+            updateName model name
 
         NewIngredientAutocompleteMsg autocompleteMsg ->
             let
                 ( updatedAutocompleteModel, maybeMsg ) =
                     newIngredientAutocomplete.update
-                        newIngredientAutocompleteModel
+                        model.newIngredientAutocompleteModel
                         autocompleteMsg
 
                 newModel =
@@ -179,19 +135,27 @@ update msg model =
         SelectNewIngredient ingredient ->
             let
                 updatedRecipeIngredients =
-                    ingredient :: recipe.ingredients
+                    Dict.insert ingredient.name ingredient model.recipeIngredients
             in
-            updateIngredients model model.allIngredients updatedRecipeIngredients
+            updateRecipeIngredients model updatedRecipeIngredients
 
         DeleteIngredient ingredient ->
             let
                 updatedRecipeIngredients =
-                    recipe.ingredients |> List.filter (\i -> i.name /= ingredient)
+                    Dict.remove ingredient model.recipeIngredients
             in
-            updateIngredients model model.allIngredients updatedRecipeIngredients
+            updateRecipeIngredients model updatedRecipeIngredients
 
         SaveRecipe ->
-            ( { model | saving = True }, saveRecipe model.recipe )
+            let
+                recipe : Recipe
+                recipe =
+                    { name = model.name
+                    , slug = slugify model.name
+                    , ingredients = Dict.values model.recipeIngredients
+                    }
+            in
+            ( { model | saving = True }, saveRecipe recipe )
 
         RecipeSaved maybeErr ->
             case maybeErr of
@@ -200,6 +164,47 @@ update msg model =
 
                 Nothing ->
                     ( { model | saving = False }, Route.pushUrl Route.Recipes model.navKey )
+
+
+updateName : Model -> String -> ( Model, Cmd Msg )
+updateName model updatedName =
+    ( { model | name = updatedName }, Cmd.none )
+
+
+updateAllIngredients : Model -> Dict String Ingredient -> ( Model, Cmd Msg )
+updateAllIngredients model updatedAllIngredients =
+    updateNewIngredientAutocomplete { model | allIngredients = updatedAllIngredients }
+
+
+updateRecipeIngredients : Model -> Dict String Ingredient -> ( Model, Cmd Msg )
+updateRecipeIngredients model updatedRecipeIngredients =
+    updateNewIngredientAutocomplete { model | recipeIngredients = updatedRecipeIngredients }
+
+
+updateNewIngredientAutocomplete : Model -> ( Model, Cmd Msg )
+updateNewIngredientAutocomplete model =
+    let
+        availableIngredients : Dict String Ingredient -> Dict String Ingredient -> List Ingredient
+        availableIngredients allIngredients addedIngredients =
+            Dict.diff
+                allIngredients
+                addedIngredients
+                |> Dict.values
+
+        updatedAvailableIngredients =
+            availableIngredients
+                model.allIngredients
+                model.recipeIngredients
+
+        ( updatedNewIngredientAutocompleteModel, nextMsg ) =
+            newIngredientAutocomplete.resetData
+                model.newIngredientAutocompleteModel
+                updatedAvailableIngredients
+
+        updatedModel =
+            { model | newIngredientAutocompleteModel = updatedNewIngredientAutocompleteModel }
+    in
+    update nextMsg updatedModel
 
 
 subscriptions : Model -> Sub Msg
@@ -231,7 +236,7 @@ viewForm model =
                 , Element.spacing 0
                 ]
                 { onChange = \s -> UpdateName s
-                , text = model.recipe.name
+                , text = model.name
                 , placeholder = Just "New Recipe"
                 , label = Nothing
                 }
@@ -260,6 +265,9 @@ viewForm model =
 viewIngredients : Model -> Element.Element Msg
 viewIngredients model =
     let
+        ingredients =
+            Dict.values model.recipeIngredients
+
         ingredientsHeader =
             Element.el
                 [ Font.size 24
@@ -268,7 +276,7 @@ viewIngredients model =
                 (Element.text "Ingredients")
 
         ingredientList =
-            model.recipe.ingredients
+            ingredients
                 |> List.map
                     (\i ->
                         Element.row
