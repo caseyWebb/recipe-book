@@ -226,6 +226,7 @@ viewForm model =
         titleInput =
             UI.textInput
                 [ Font.size 36
+                , Font.bold
                 , Element.paddingXY 0 12
                 , Element.spacing 0
                 ]

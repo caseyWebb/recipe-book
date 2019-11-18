@@ -54,7 +54,7 @@ view model =
                     Element.el
                         [ Font.bold
                         , Font.size 36
-                        , Element.paddingEach { top = 0, bottom = 36, left = 0, right = 0 }
+                        , Element.paddingEach { top = 12, bottom = 63, left = 0, right = 0 }
                         ]
                     <|
                         Element.text recipe.name
@@ -84,15 +84,22 @@ view model =
 
 viewIngredients : List Ingredient -> Element.Element Msg
 viewIngredients ingredients =
-    Element.column [ Element.spacing 8 ] <|
+    Element.column [ Element.spacing 10 ] <|
         [ Element.el
             [ Font.bold
-            , Font.size 22
-            , Element.paddingEach { top = 0, bottom = 18, right = 0, left = 0 }
+            , Font.size 24
+            , Element.paddingEach { top = 0, bottom = 10, right = 0, left = 0 }
             ]
           <|
             Element.text "Ingredients"
         ]
             ++ (ingredients
-                    |> List.map (\i -> Element.el [] <| Element.text i.name)
+                    |> List.map
+                        (\i ->
+                            Element.el
+                                [ Font.size 16
+                                ]
+                            <|
+                                Element.text i.name
+                        )
                )
