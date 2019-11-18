@@ -35,9 +35,10 @@ type Msg
     | ReceiveIngredients (List Ingredient)
     | SaveRecipe
     | RecipeSaved (Maybe String)
+    | UpdateName String
     | SelectNewIngredient Ingredient
     | DeleteIngredient String
-    | UpdateName String
+    | UpdateIngredientQuantity Ingredient Float
     | NewIngredientAutocompleteMsg (Autocomplete.Msg Ingredient)
 
 
@@ -145,6 +146,13 @@ update msg model =
                     Dict.remove ingredient model.recipeIngredients
             in
             updateRecipeIngredients model updatedRecipeIngredients
+
+        UpdateIngredientQuantity ingredient quantity ->
+            let
+                updatedRecipeIngredients =
+                    Dict.insert ingredient.name { ingredient | quantity = quantity } model.recipeIngredients
+            in
+            ( { model | recipeIngredients = updatedRecipeIngredients }, Cmd.none )
 
         SaveRecipe ->
             let
