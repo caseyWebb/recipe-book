@@ -17,7 +17,6 @@ type alias Options msg a =
     { placeholder : Maybe String
     , msg : Msg a -> msg
     , onSelect : a -> msg
-    , mapData : a -> String
     , createNew : String -> a
     }
 
@@ -41,10 +40,10 @@ type Msg a
 
 
 type alias Autocomplete msg a =
-    { init : List a -> Model a
+    { init : Dict.Dict String a -> Model a
     , update : Model a -> Msg a -> ( Model a, Maybe msg )
     , reset : Model a -> msg
-    , resetData : Model a -> List a -> ( Model a, msg )
+    , resetData : Model a -> Dict.Dict String a -> ( Model a, msg )
     , subscriptions : Sub msg
     , view : Model a -> Element.Element msg
     }
@@ -52,7 +51,7 @@ type alias Autocomplete msg a =
 
 with : Options msg a -> Autocomplete msg a
 with options =
-    { init = init options
+    { init = init
     , update = update options
     , reset = reset options
     , resetData = resetData options
@@ -61,12 +60,9 @@ with options =
     }
 
 
-init : Options msg a -> List a -> Model a
-init options data =
-    { data =
-        data
-            |> List.map (\d -> ( options.mapData d, d ))
-            |> Dict.fromList
+init : Dict.Dict String a -> Model a
+init data =
+    { data = data
     , filteredData = []
     , query = ""
     , inputFocused = False
@@ -111,7 +107,7 @@ update options model msg =
         UpdateQuery updatedQuery ->
             let
                 updatedFilteredData =
-                    getFilteredData options model.data updatedQuery
+                    getFilteredData model.data updatedQuery
 
                 updatedMenuModel =
                     if String.isEmpty updatedQuery then
@@ -165,16 +161,11 @@ reset options model =
     options.msg <| Reset (Menu.reset updateConfig model.menu)
 
 
-resetData : Options msg a -> Model a -> List a -> ( Model a, msg )
+resetData : Options msg a -> Model a -> Dict.Dict String a -> ( Model a, msg )
 resetData options model data =
     let
         updatedModel =
-            { model
-                | data =
-                    data
-                        |> List.map (\d -> ( options.mapData d, d ))
-                        |> Dict.fromList
-            }
+            { model | data = data }
     in
     ( updatedModel, reset options updatedModel )
 
@@ -313,16 +304,13 @@ viewConfig =
         }
 
 
-getFilteredData : Options msg a -> Dict.Dict String a -> String -> List String
-getFilteredData options data query =
+getFilteredData : Dict.Dict String a -> String -> List String
+getFilteredData data query =
     let
         lowerQuery =
             String.toLower query
 
-        mappedData =
-            List.map options.mapData (Dict.values data)
-
         searchCaseInsensitive =
             \s -> String.toLower s |> String.contains lowerQuery
     in
-    List.filter searchCaseInsensitive mappedData
+    List.filter searchCaseInsensitive (Dict.keys data)

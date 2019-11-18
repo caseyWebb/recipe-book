@@ -2,7 +2,7 @@ module Pages.Recipes.Editor exposing (Model, Msg, init, subscriptions, update, v
 
 import Browser.Navigation as Nav
 import Data.Ingredient exposing (Ingredient, fetchIngredients, receiveIngredients)
-import Data.Recipe exposing (Recipe, findRecipeById, newRecipe, receiveRecipe, recipeSaved, saveRecipe)
+import Data.Recipe exposing (Recipe, findRecipeById, receiveRecipe, recipeSaved, saveRecipe)
 import Dict exposing (Dict)
 import Element
 import Element.Font as Font
@@ -70,7 +70,7 @@ init navKey maybeId =
             , allIngredients = Dict.empty
             , name = ""
             , recipeIngredients = Dict.empty
-            , newIngredientAutocompleteModel = newIngredientAutocomplete.init []
+            , newIngredientAutocompleteModel = newIngredientAutocomplete.init Dict.empty
             }
     in
     ( initialModel, initCmds )
@@ -184,15 +184,8 @@ updateRecipeIngredients model updatedRecipeIngredients =
 updateNewIngredientAutocomplete : Model -> ( Model, Cmd Msg )
 updateNewIngredientAutocomplete model =
     let
-        availableIngredients : Dict String Ingredient -> Dict String Ingredient -> List Ingredient
-        availableIngredients allIngredients addedIngredients =
-            Dict.diff
-                allIngredients
-                addedIngredients
-                |> Dict.values
-
         updatedAvailableIngredients =
-            availableIngredients
+            Dict.diff
                 model.allIngredients
                 model.recipeIngredients
 
@@ -317,7 +310,6 @@ newIngredientAutocomplete =
         { placeholder = Just "Add Ingredient"
         , msg = \msg -> NewIngredientAutocompleteMsg msg
         , onSelect = \ingredient -> SelectNewIngredient ingredient
-        , mapData = .name
         , createNew = \i -> { name = i, section = "Unknown", quantity = 1, unit = "" }
         }
 
