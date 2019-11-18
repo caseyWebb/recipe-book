@@ -91,11 +91,12 @@ update msg model =
                 (toDict addedIngredients)
                 |> Dict.values
 
-        updateIngredients updatedRecipeIngredients =
+        updateIngredients : Model -> List Ingredient -> List Ingredient -> ( Model, Cmd Msg )
+        updateIngredients currentModel updatedAllIngredients updatedRecipeIngredients =
             let
                 updatedAvailableIngredients =
                     availableIngredients
-                        model.allIngredients
+                        updatedAllIngredients
                         updatedRecipeIngredients
 
                 ( updatedNewIngredientAutocompleteModel, nextMsg ) =
@@ -103,11 +104,14 @@ update msg model =
                         newIngredientAutocompleteModel
                         updatedAvailableIngredients
 
+                currentRecipe =
+                    currentModel.recipe
+
                 updatedRecipe =
-                    { recipe | ingredients = updatedRecipeIngredients }
+                    { currentRecipe | ingredients = updatedRecipeIngredients }
 
                 updatedModel =
-                    { model
+                    { currentModel
                         | recipe = updatedRecipe
                         , newIngredientAutocompleteModel = updatedNewIngredientAutocompleteModel
                     }
@@ -125,25 +129,21 @@ update msg model =
             ( model, findRecipeById id )
 
         RecipeRecieved updatedRecipe ->
-            ( { model | recipe = updatedRecipe }, Cmd.none )
+            let
+                updatedModel =
+                    { model | recipe = updatedRecipe }
+            in
+            updateIngredients updatedModel updatedModel.allIngredients updatedRecipe.ingredients
 
         FetchIngredients ->
             ( model, fetchIngredients () )
 
         ReceiveIngredients ingredients ->
             let
-                ( updatedNewIngredientAutocompleteModel, nextMsg ) =
-                    newIngredientAutocomplete.resetData
-                        newIngredientAutocompleteModel
-                        ingredients
-
                 updatedModel =
-                    { model
-                        | allIngredients = ingredients
-                        , newIngredientAutocompleteModel = updatedNewIngredientAutocompleteModel
-                    }
+                    { model | allIngredients = ingredients }
             in
-            update nextMsg updatedModel
+            updateIngredients updatedModel ingredients updatedModel.recipe.ingredients
 
         UpdateName name ->
             let
@@ -181,14 +181,14 @@ update msg model =
                 updatedRecipeIngredients =
                     ingredient :: recipe.ingredients
             in
-            updateIngredients updatedRecipeIngredients
+            updateIngredients model model.allIngredients updatedRecipeIngredients
 
         DeleteIngredient ingredient ->
             let
                 updatedRecipeIngredients =
                     recipe.ingredients |> List.filter (\i -> i.name /= ingredient)
             in
-            updateIngredients updatedRecipeIngredients
+            updateIngredients model model.allIngredients updatedRecipeIngredients
 
         SaveRecipe ->
             ( { model | saving = True }, saveRecipe model.recipe )
